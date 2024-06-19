@@ -1,4 +1,4 @@
-import type { Api, Composer, Context } from "grammy";
+import type { Api } from "grammy";
 import { BaseHandler } from "../base";
 
 export class MemoryUsageHandler extends BaseHandler {

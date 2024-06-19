@@ -14,10 +14,7 @@ export class MemoryUsageHandler extends BaseHandler {
     );
   }
 
-  async onMemoryCommand(
-    api: Api,
-    x: { chatId: number; threadId?: number; memoryUsageBytes: number },
-  ) {
+  async onMemoryCommand(api: Api, x: { chatId: number; memoryUsageBytes: number }) {
     const usageMegabytes = Number((x.memoryUsageBytes / 1024 / 1024).toFixed(2));
     await api.sendMessage(x.chatId, `Потребление памяти: ${usageMegabytes} МБ`);
   }

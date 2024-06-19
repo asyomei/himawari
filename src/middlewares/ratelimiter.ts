@@ -1,5 +1,5 @@
 import { limit } from "@grammyjs/ratelimiter";
-import { Composer, type Context, type Middleware, type NextFunction } from "grammy";
+import { Composer, type Context, type Middleware } from "grammy";
 import type { Redis } from "ioredis";
 
 export function getRatelimiter(redis: Redis): Middleware {

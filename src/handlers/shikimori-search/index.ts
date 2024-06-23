@@ -1,7 +1,19 @@
-import { type Context, type Filter, InlineKeyboard } from "grammy";
+import {
+  type Context,
+  type Filter,
+  InlineKeyboard,
+  type InlineQueryContext,
+  InlineQueryResultBuilder,
+} from "grammy";
 import { compact } from "lodash-es";
 import { z } from "zod";
-import { type Basic, type IShikimoriService, type Type, type } from "#/services/shikimori";
+import {
+  type Basic,
+  type IShikimoriService,
+  type Type,
+  type VideoKind,
+  type,
+} from "#/services/shikimori";
 import { Callbacks } from "#/utils/callbacks";
 import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "../base";
@@ -16,11 +28,14 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     const cbd = this.comp.on("callback_query:data");
     cbd
-      .filter(this.cb.has("shikiT"))
-      .filter(Callbacks.checkId, ctx => this.onTitleData(ctx, ctx.data));
+      .filter(this.cb.has("shikiT", ctx => ctx.data.type === "animes"))
+      .filter(Callbacks.checkId, ctx => this.onAnimeTitleData(ctx, ctx.data));
     cbd
       .filter(this.cb.has("shikiQ"))
       .filter(Callbacks.checkId, ctx => this.onChangePageData(ctx, ctx.data));
+
+    this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx => this.onAnimeScreenshotsInline(ctx));
+    this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx => this.onAnimeVideoInline(ctx));
   }
 
   async onSearchCommand(ctx: Filter<Context, "message:text">, type: Type, search: string) {
@@ -68,35 +83,82 @@ export class ShikimoriSearchHandler extends BaseHandler {
     ]);
   }
 
-  async onTitleData(
+  async onAnimeTitleData(
     ctx: Filter<Context, "callback_query:data">,
     data: z.infer<(typeof this.cb)["schemas"]["shikiT"]>,
   ) {
-    let text: string | undefined;
-    let imageUrl: string;
-    let imageText: string;
-
-    if (data.type === "animes") {
-      const anime = await this.shikimori.anime(data.titleId);
-      if (anime) {
-        text = makeAnimeText(anime);
-        imageUrl = anime.poster;
-        imageText = compact([anime.russian, anime.name]).join(" | ");
-      }
-    }
-
-    if (text == null) {
-      await ctx.answerCallbackQuery("Что-то пошло не так");
+    const anime = await this.shikimori.anime(data.titleId);
+    if (!anime) {
+      await Promise.all([ctx.deleteMessage(), ctx.answerCallbackQuery("Что-то пошло не так")]);
       return;
     }
 
+    const caption = compact([anime.russian, anime.name]).join(" | ");
+
     await ctx.answerCallbackQuery();
-    const m = await ctx.replyWithPhoto(imageUrl!, { caption: imageText! });
-    await ctx.reply(text, {
+    const m = await ctx.replyWithPhoto(anime.poster, { caption });
+    await ctx.reply(makeAnimeText(anime), {
       parse_mode: "HTML",
       reply_parameters: makeReply(m),
       link_preview_options: { is_disabled: true },
+      reply_markup: InlineKeyboard.from([
+        [
+          InlineKeyboard.switchInlineCurrent("Скриншоты", `anime-screenshots:${anime.id}`),
+          InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
+        ],
+      ]),
     });
+  }
+
+  async onAnimeScreenshotsInline(ctx: InlineQueryContext<Context>) {
+    const titleId = ctx.match![1];
+
+    const data = await this.shikimori.screenshots(titleId);
+    if (!data?.screenshots.length) {
+      await ctx.answerInlineQuery([]);
+      return;
+    }
+
+    const results = data.screenshots
+      .slice(0, 50)
+      .map(scr => InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl));
+    await ctx.answerInlineQuery(results);
+  }
+
+  async onAnimeVideoInline(ctx: InlineQueryContext<Context>) {
+    const titleId = ctx.match![1];
+
+    const data = await this.shikimori.videos(titleId);
+    if (!data?.videos.length) {
+      await ctx.answerInlineQuery([]);
+      return;
+    }
+
+    const getName = (kind: VideoKind) =>
+      ({
+        pv: "PV",
+        cm: "CM",
+        op: "Опенинг",
+        ed: "Эндинг",
+        clip: "Клип",
+        op_ed_clip: "OP&ED клип",
+        character_trailer: "Трейлер персонажа",
+        episode_preview: "Превью к эпизоду",
+        other: "Другое",
+      })[kind];
+
+    const results = data.videos
+      .slice(0, 50)
+      .map(vid =>
+        InlineQueryResultBuilder.videoHtml(
+          vid.id,
+          vid.name ?? getName(vid.kind),
+          vid.playerUrl,
+          vid.imageUrl,
+        ).text((vid.name ?? getName(vid.kind)) + "\n" + vid.url),
+      );
+
+    await ctx.answerInlineQuery(results);
   }
 
   buildBasicListMenu(basics: Basic[], type: Type, page: number, fromId: number) {

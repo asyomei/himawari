@@ -119,7 +119,7 @@ describe("ShikimoriSearchHandler", async () => {
       from: { id: 2 },
     } as Message);
 
-    await handler.onTitleData(ctx, { type: "animes", titleId: "47", fromId: 1 });
+    await handler.onAnimeTitleData(ctx, { type: "animes", titleId: "47", fromId: 1 });
 
     const text = dedent`
       <b>Russian 47</b>

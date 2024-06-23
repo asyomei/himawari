@@ -42,3 +42,42 @@ export const anime = z.object({
   studios: z.array(z.object({ name: z.string() }).transform(x => x.name)),
   descriptionHtml: z.string().nullish(),
 });
+
+export type Screenshots = z.infer<typeof screenshots>;
+export const screenshots = z.object({
+  screenshots: z.array(
+    z.object({
+      id: z.string(),
+      originalUrl: z.string().url(),
+    }),
+  ),
+});
+
+export type VideoKind = z.infer<typeof videoKind>;
+export const videoKind = z.enum([
+  "pv",
+  "character_trailer",
+  "cm",
+  "op",
+  "ed",
+  "op_ed_clip",
+  "clip",
+  "other",
+  "episode_preview",
+]);
+
+const urlLike = z.preprocess(x => String(x).replace(/^\/\//, "https://"), z.string().url());
+
+export type Videos = z.infer<typeof videos>;
+export const videos = z.object({
+  videos: z.array(
+    z.object({
+      id: z.string(),
+      kind: videoKind,
+      name: z.string().nullish(),
+      imageUrl: urlLike,
+      playerUrl: urlLike,
+      url: urlLike,
+    }),
+  ),
+});

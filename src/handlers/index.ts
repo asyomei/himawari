@@ -9,6 +9,6 @@ export function setupHandlers(comp: Composer<Context>) {
 
   comp.use(new MemoryUsageHandler(), new ShikimoriSearchHandler(shikimori));
 
-  // handle unused callback lastly
+  // handle unused callback (and inline too) lastly
   comp.use(unusedCallback);
 }

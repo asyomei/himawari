@@ -24,7 +24,13 @@ async function start() {
   setupMiddlewares(bot, { redis });
   setupHandlers(bot);
 
-  runner = run(bot);
+  runner = run(bot, {
+    runner: {
+      fetch: {
+        allowed_updates: ["message", "callback_query", "inline_query"],
+      },
+    },
+  });
 
   await bot.init();
   console.log(`@${bot.botInfo.username} started`);

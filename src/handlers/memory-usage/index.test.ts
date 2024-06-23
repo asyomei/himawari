@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import { expect } from "expect";
-import { type ApiRequest, getTestApi } from "#/utils/testing";
+import { type ApiRequest, getTestApi, getTestContext } from "#/utils/testing";
 import { MemoryUsageHandler } from ".";
 
 describe("MemoryUsageHandler", () => {
@@ -9,11 +9,11 @@ describe("MemoryUsageHandler", () => {
   for (const megabytes of [3.45, 42]) {
     it(`should send memory usage when it is ${megabytes} MB`, async () => {
       const [api, reqs] = getTestApi();
-
-      await handler.onMemoryCommand(api, {
-        chatId: 1,
-        memoryUsageBytes: megabytes * 1024 * 1024,
+      const ctx = getTestContext(api, "message", {
+        chat: { id: 1 },
       });
+
+      await handler.onMemoryCommand(ctx, megabytes * 1024 * 1024);
 
       expect(reqs).toEqual([
         {

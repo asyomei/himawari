@@ -56,7 +56,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
     ctx: Filter<Context, "callback_query">,
     data: z.infer<(typeof this.cb)["schemas"]["shikiQ"]>,
   ) {
-    if (data.page < 0) {
+    if (data.page < 1) {
       await ctx.answerCallbackQuery("Достигнуто начало поиска");
       return;
     }

@@ -1,6 +1,6 @@
 import { type RunnerHandle, run } from "@grammyjs/runner";
 import type { Redis } from "ioredis";
-import { once } from "remeda";
+import { once } from "lodash-es";
 import { createBot } from "./bot";
 import { env } from "./env";
 import { setupHandlers } from "./handlers";

@@ -16,15 +16,25 @@
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "grammy": "^1.24.1",
+    "graphql-request": "^7.0.1",
     "ioredis": "^5.4.1",
-    "remeda": "^2.2.0",
-    "tsx": "^4.15.5"
+    "lodash-es": "^4.17.21",
+    "node-html-parser": "^6.1.13",
+    "tsx": "^4.15.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.1",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.14.2",
+    "dedent": "^1.5.3",
     "expect": "^29.7.0",
     "type-fest": "^4.20.1",
     "typescript": "^5.4.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "whatwg-url": "13.0.0"
+    }
   }
 }

@@ -3,7 +3,7 @@ import { compact } from "lodash-es";
 import { z } from "zod";
 import { type Basic, type IShikimoriService, type Type, type } from "#/services/shikimori";
 import { Callbacks } from "#/utils/callbacks";
-import { branch, makeReply } from "#/utils/telegram";
+import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
 

@@ -18,18 +18,23 @@ import { Callbacks } from "#/utils/callbacks";
 import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
+import { makeMangaText } from "./manga-text";
 
 export class ShikimoriSearchHandler extends BaseHandler {
   constructor(private shikimori: IShikimoriService) {
     super();
 
     const msg = this.comp.on("message:text");
-    msg.command("anime", ctx => this.onSearchCommand(ctx, "animes", ctx.match));
+    msg.command("animes", ctx => this.onSearchCommand(ctx, "animes", ctx.match));
+    msg.command("mangas", ctx => this.onSearchCommand(ctx, "mangas", ctx.match));
 
     const cbd = this.comp.on("callback_query:data");
     cbd
       .filter(this.cb.has("shikiT", ctx => ctx.data.type === "animes"))
       .filter(Callbacks.checkId, ctx => this.onAnimeTitleData(ctx, ctx.data));
+    cbd
+      .filter(this.cb.has("shikiT", ctx => ctx.data.type === "mangas"))
+      .filter(Callbacks.checkId, ctx => this.onMangaTitleData(ctx, ctx.data));
     cbd
       .filter(this.cb.has("shikiQ"))
       .filter(Callbacks.checkId, ctx => this.onChangePageData(ctx, ctx.data));
@@ -107,6 +112,27 @@ export class ShikimoriSearchHandler extends BaseHandler {
           InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
         ],
       ]),
+    });
+  }
+
+  async onMangaTitleData(
+    ctx: Filter<Context, "callback_query:data">,
+    data: z.infer<(typeof this.cb)["schemas"]["shikiT"]>,
+  ) {
+    const manga = await this.shikimori.manga(data.titleId);
+    if (!manga) {
+      await Promise.all([ctx.deleteMessage(), ctx.answerCallbackQuery("Что-то пошло не так")]);
+      return;
+    }
+
+    const caption = compact([manga.russian, manga.name]).join(" | ");
+
+    await ctx.answerCallbackQuery();
+    const m = await ctx.replyWithPhoto(manga.poster, { caption });
+    await ctx.reply(makeMangaText(manga), {
+      parse_mode: "HTML",
+      reply_parameters: makeReply(m),
+      link_preview_options: { is_disabled: true },
     });
   }
 

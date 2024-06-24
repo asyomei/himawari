@@ -5,11 +5,13 @@ import type { IShikimoriService } from "./interface";
 import {
   type Anime,
   type Basic,
+  type Manga,
   type Screenshots,
   type Type,
   type Videos,
   anime,
   basic,
+  manga,
   screenshots,
   type,
   videos,
@@ -43,6 +45,12 @@ const videosGql = makeGraphql(u => {
 });
 const videosSchema = z.object({ animes: z.array(videos).max(1) });
 
+const mangaGql = makeGraphql(u => {
+  const ids = u.var("ids", "String!");
+  return u.query("mangas", { ids }, manga);
+});
+const mangaSchema = z.object({ mangas: z.array(manga).max(1) });
+
 export class ShikimoriService implements IShikimoriService {
   async search(type: Type, search: string, page?: number): Promise<Basic[]> {
     const res = await request(GRAPHQL_URL, getSearchGql(type), { search, page });
@@ -62,5 +70,10 @@ export class ShikimoriService implements IShikimoriService {
   async videos(animeId: string): Promise<Videos | undefined> {
     const res = await request(GRAPHQL_URL, videosGql, { ids: animeId });
     return videosSchema.parse(res).animes[0];
+  }
+
+  async manga(id: string): Promise<Manga | undefined> {
+    const res = await request(GRAPHQL_URL, mangaGql, { ids: id });
+    return mangaSchema.parse(res).mangas[0];
   }
 }

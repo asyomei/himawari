@@ -1,6 +1,6 @@
 import type { Context, Filter } from "grammy";
 import { himawari } from "#/filters/himawari";
-import { BaseHandler } from "../base";
+import { BaseHandler } from "./base";
 
 export class MemoryUsageHandler extends BaseHandler {
   constructor() {

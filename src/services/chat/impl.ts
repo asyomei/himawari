@@ -21,7 +21,7 @@ export class ChatService implements IChatService {
       method: "POST",
       body: JSON.stringify({
         model: "gpt-4",
-        message: history,
+        messages: history,
         prompt: message,
         markdown: false,
       }),

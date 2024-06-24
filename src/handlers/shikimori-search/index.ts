@@ -157,9 +157,13 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return;
     }
 
-    const results = data.screenshots
-      .slice(0, 50)
-      .map(scr => InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl));
+    const results = data.screenshots.slice(0, 50).map(scr =>
+      InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl, {
+        photo_width: 1920,
+        photo_height: 1080,
+        thumbnail_url: scr.originalUrl,
+      }),
+    );
     await ctx.answerInlineQuery(results);
   }
 
@@ -185,16 +189,12 @@ export class ShikimoriSearchHandler extends BaseHandler {
         other: "Другое",
       })[kind];
 
-    const results = data.videos
-      .slice(0, 50)
-      .map(vid =>
-        InlineQueryResultBuilder.videoHtml(
-          vid.id,
-          vid.name ?? getName(vid.kind),
-          vid.playerUrl,
-          vid.imageUrl,
-        ).text((vid.name ?? getName(vid.kind)) + "\n" + vid.url),
+    const results = data.videos.slice(0, 50).map(vid => {
+      const name = vid.name ?? getName(vid.kind);
+      return InlineQueryResultBuilder.videoHtml(vid.id, name, vid.playerUrl, vid.imageUrl).text(
+        name + "\n" + vid.url,
       );
+    });
 
     await ctx.answerInlineQuery(results);
   }

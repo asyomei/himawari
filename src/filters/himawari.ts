@@ -18,7 +18,7 @@ export function himawari(...commands: string[]) {
     }
 
     lower = text.toLowerCase();
-    if (commands.some(c => lower.startsWith(c + " "))) {
+    if (commands.some(c => lower.startsWith(c))) {
       (ctx as any).match = splitOnce(text, /\s+/)[1];
       return true;
     }

@@ -7,7 +7,7 @@ type NarrowMatch<C extends Context, T extends C["match"]> = {
 
 export function himawari(...commands: string[]) {
   return <C extends Context>(ctx: C): ctx is NarrowMatch<C, string> => {
-    let text = ctx.msg?.text;
+    let text = ctx.msg?.text?.toLowerCase();
     if (!text) return false;
 
     if (text.startsWith("himawari") || text.startsWith("химавари")) {

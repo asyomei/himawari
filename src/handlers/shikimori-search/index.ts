@@ -25,8 +25,8 @@ export class ShikimoriSearchHandler extends BaseHandler {
     super();
 
     const msg = this.comp.on("message:text");
-    msg.command("animes", ctx => this.onSearchCommand(ctx, "animes", ctx.match));
-    msg.command("mangas", ctx => this.onSearchCommand(ctx, "mangas", ctx.match));
+    msg.command(["anime", "animes"], ctx => this.onSearchCommand(ctx, "animes", ctx.match));
+    msg.command(["manga", "mangas"], ctx => this.onSearchCommand(ctx, "mangas", ctx.match));
 
     const cbd = this.comp.on("callback_query:data");
     cbd
@@ -44,6 +44,13 @@ export class ShikimoriSearchHandler extends BaseHandler {
   }
 
   async onSearchCommand(ctx: Filter<Context, "message:text">, type: Type, search: string) {
+    if (!search) {
+      await ctx.reply("Введите название для поиска", {
+        reply_parameters: makeReply(ctx.msg),
+      });
+      return;
+    }
+
     const name = { animes: "аниме", mangas: "манги" }[type];
 
     const m = await ctx.reply(`Поиск ${name}: ${search}...`, {

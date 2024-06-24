@@ -7,16 +7,18 @@ type NarrowMatch<C extends Context, T extends C["match"]> = {
 
 export function himawari(...commands: string[]) {
   return <C extends Context>(ctx: C): ctx is NarrowMatch<C, string> => {
-    let text = ctx.msg?.text?.toLowerCase();
+    let text = ctx.msg?.text;
     if (!text) return false;
 
-    if (text.startsWith("himawari") || text.startsWith("химавари")) {
+    let lower = text.toLowerCase();
+    if (lower.startsWith("himawari ") || lower.startsWith("химавари ")) {
       text = splitOnce(text, /\s+/)[1];
     } else if (ctx.chat?.type !== "private") {
       return false;
     }
 
-    if (commands.some(c => text!.startsWith(c))) {
+    lower = text.toLowerCase();
+    if (commands.some(c => lower.startsWith(c + " "))) {
       (ctx as any).match = splitOnce(text, /\s+/)[1];
       return true;
     }

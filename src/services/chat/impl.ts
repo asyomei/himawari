@@ -1,4 +1,5 @@
 import type { Redis } from "ioredis";
+import { trim } from "lodash-es";
 import { z } from "zod";
 import type { IChatService } from "./interface";
 
@@ -26,7 +27,7 @@ export class ChatService implements IChatService {
         markdown: false,
       }),
     });
-    const obj = await res.json();
+    const obj = JSON.parse(trim(await res.text(), "_"));
 
     history.push(
       { role: "user", content: message },

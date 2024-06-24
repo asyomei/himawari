@@ -4,9 +4,9 @@ import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "./base";
 
 const HELP_TEXT = dedent`
-  Команды:
-  - /anime, /animes [название] - поиск аниме
-  - /manga, /mangas [название] - поиск манги
+  Команды (химавари <команда>):
+  - аниме [название] - поиск аниме
+  - манга [название] - поиск манги
 `;
 
 export class HelpHandler extends BaseHandler {

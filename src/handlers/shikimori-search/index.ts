@@ -7,6 +7,7 @@ import {
 } from "grammy";
 import { compact } from "lodash-es";
 import { z } from "zod";
+import { himawari } from "#/filters/himawari";
 import {
   type Basic,
   type IShikimoriService,
@@ -25,8 +26,12 @@ export class ShikimoriSearchHandler extends BaseHandler {
     super();
 
     const msg = this.comp.on("message:text");
-    msg.command(["anime", "animes"], ctx => this.onSearchCommand(ctx, "animes", ctx.match));
-    msg.command(["manga", "mangas"], ctx => this.onSearchCommand(ctx, "mangas", ctx.match));
+    msg.filter(himawari("anime", "animes", "аниме"), ctx =>
+      this.onSearchCommand(ctx, "animes", ctx.match),
+    );
+    msg.filter(himawari("manga", "mangas", "манга"), ctx =>
+      this.onSearchCommand(ctx, "mangas", ctx.match),
+    );
 
     const cbd = this.comp.on("callback_query:data");
     cbd

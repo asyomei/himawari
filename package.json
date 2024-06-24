@@ -5,14 +5,14 @@
   "private": "true",
   "scripts": {
     "start": "tsx src/main.ts",
-    "test": "tsx --test src/**/*.test.ts",
-    "tc": "tsc --noEmit"
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "@grammyjs/auto-retry": "^2.0.1",
     "@grammyjs/ratelimiter": "^1.2.0",
     "@grammyjs/runner": "^2.0.3",
     "@grammyjs/transformer-throttler": "^1.2.1",
+    "dedent": "^1.5.3",
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "grammy": "^1.25.1",
@@ -27,8 +27,6 @@
     "@biomejs/biome": "^1.8.2",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.14.8",
-    "dedent": "^1.5.3",
-    "expect": "^29.7.0",
     "type-fest": "^4.20.1",
     "typescript": "^5.5.2"
   },

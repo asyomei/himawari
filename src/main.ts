@@ -22,7 +22,7 @@ async function start() {
   const bot = createBot(env.BOT_TOKEN);
   setupThrottlers(bot.api);
   setupMiddlewares(bot, { redis });
-  setupHandlers(bot);
+  setupHandlers(bot, { redis });
 
   runner = run(bot, {
     runner: {

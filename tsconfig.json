@@ -10,9 +10,15 @@
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
     "paths": {
-      "#/*": ["./src/*"]
+      "#/*": [
+        "./src/*"
+      ]
     },
+    "outDir": "./dist/",
     "noErrorTruncation": true,
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "./src"
+  ]
 }

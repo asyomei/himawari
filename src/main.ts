@@ -1,6 +1,5 @@
 import { type RunnerHandle, run } from "@grammyjs/runner";
 import type { Redis } from "ioredis";
-import { once } from "lodash-es";
 import { createBot } from "./bot";
 import { env } from "./env";
 import { setupHandlers } from "./handlers";
@@ -11,13 +10,11 @@ import { setupThrottlers } from "./transformers";
 let redis: Redis | undefined;
 let runner: RunnerHandle | undefined;
 
-const exit = once(stop);
-process.on("SIGINT", exit).on("SIGTERM", exit).on("SIGHUP", exit);
-
 await start();
 
 async function start() {
   redis = createRedis(env.REDIS_URL);
+  await redis.connect();
 
   const bot = createBot(env.BOT_TOKEN);
   setupThrottlers(bot.api);
@@ -34,16 +31,4 @@ async function start() {
 
   await bot.init();
   console.log(`@${bot.botInfo.username} started`);
-}
-
-async function stop() {
-  console.log("Goodbye!");
-
-  if (runner?.isRunning()) {
-    await runner.stop();
-  }
-
-  await redis?.quit();
-
-  process.exit();
 }

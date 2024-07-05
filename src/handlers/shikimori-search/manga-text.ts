@@ -1,4 +1,4 @@
-import { compact } from "lodash-es";
+import compact from "just-compact";
 import type { Manga } from "#/services/shikimori";
 import { a, b, parseDescription } from "./utils";
 

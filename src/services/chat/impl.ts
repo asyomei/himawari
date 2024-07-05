@@ -1,6 +1,6 @@
 import type { Redis } from "ioredis";
-import { trim } from "lodash-es";
 import { z } from "zod";
+import trim from "#/utils/trim";
 import type { IChatService } from "./interface";
 
 export type History = z.infer<typeof history>;

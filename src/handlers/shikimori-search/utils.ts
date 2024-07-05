@@ -1,5 +1,5 @@
-import { escape as escapeHTML } from "lodash-es";
 import { parse as parseHTML } from "node-html-parser";
+import escapeHTML from "#/utils/escape-html";
 
 export const a = (name: any, url: any) => `<a href="${url}">${escapeHTML(name)}</a>`;
 export const b = (text: any) => `<b>${escapeHTML(text)}</b>`;

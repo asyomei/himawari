@@ -5,7 +5,7 @@ import {
   type InlineQueryContext,
   InlineQueryResultBuilder,
 } from "grammy";
-import { compact } from "lodash-es";
+import compact from "just-compact";
 import { z } from "zod";
 import { himawari } from "#/filters/himawari";
 import {

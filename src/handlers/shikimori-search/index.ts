@@ -8,13 +8,9 @@ import {
 import compact from "just-compact";
 import { z } from "zod";
 import { himawari } from "#/filters/himawari";
-import {
-  type Basic,
-  type IShikimoriService,
-  type Type,
-  type VideoKind,
-  type,
-} from "#/services/shikimori";
+import type { IShikimoriService } from "#/services/shikimori";
+import { zType } from "#/services/shikimori/schemas";
+import type { Basic, Type, VideoKind } from "#/services/shikimori/types";
 import { Callbacks } from "#/utils/callbacks";
 import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "../base";
@@ -113,7 +109,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const caption = compact([anime.russian, anime.name]).join(" | ");
 
     await ctx.answerCallbackQuery();
-    const m = await ctx.replyWithPhoto(anime.poster, { caption });
+    const m = await ctx.replyWithPhoto(anime.poster.originalUrl, { caption });
     await ctx.reply(makeAnimeText(anime), {
       parse_mode: "HTML",
       reply_parameters: makeReply(m),
@@ -140,7 +136,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const caption = compact([manga.russian, manga.name]).join(" | ");
 
     await ctx.answerCallbackQuery();
-    const m = await ctx.replyWithPhoto(manga.poster, { caption });
+    const m = await ctx.replyWithPhoto(manga.poster.originalUrl, { caption });
     await ctx.reply(makeMangaText(manga), {
       parse_mode: "HTML",
       reply_parameters: makeReply(m),
@@ -151,13 +147,13 @@ export class ShikimoriSearchHandler extends BaseHandler {
   async onAnimeScreenshotsInline(ctx: InlineQueryContext<Context>) {
     const titleId = ctx.match![1];
 
-    const data = await this.shikimori.screenshots(titleId);
-    if (!data?.screenshots.length) {
+    const screenshots = await this.shikimori.screenshots(titleId);
+    if (!screenshots.length) {
       await ctx.answerInlineQuery([]);
       return;
     }
 
-    const results = data.screenshots.slice(0, 50).map(scr =>
+    const results = screenshots.slice(0, 50).map(scr =>
       InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl, {
         photo_width: 1920,
         photo_height: 1080,
@@ -170,8 +166,8 @@ export class ShikimoriSearchHandler extends BaseHandler {
   async onAnimeVideoInline(ctx: InlineQueryContext<Context>) {
     const titleId = ctx.match![1];
 
-    const data = await this.shikimori.videos(titleId);
-    if (!data?.videos.length) {
+    const videos = await this.shikimori.videos(titleId);
+    if (!videos.length) {
       await ctx.answerInlineQuery([]);
       return;
     }
@@ -189,7 +185,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
         other: "Другое",
       })[kind];
 
-    const results = data.videos.slice(0, 50).map(vid => {
+    const results = videos.slice(0, 50).map(vid => {
       const name = vid.name ?? getName(vid.kind);
       return InlineQueryResultBuilder.videoHtml(vid.id, name, vid.playerUrl, vid.imageUrl).text(
         name + "\n" + vid.url,
@@ -217,12 +213,12 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
   private cb = new Callbacks({
     shikiT: z.object({
-      type,
+      type: zType,
       titleId: z.string(),
       fromId: z.number().int(),
     }),
     shikiQ: z.object({
-      type,
+      type: zType,
       page: z.number().int(),
       fromId: z.number().int(),
     }),

@@ -1,2 +1,2 @@
 export * from "./impl";
-export * from "./interface";
+export type * from "./interface";

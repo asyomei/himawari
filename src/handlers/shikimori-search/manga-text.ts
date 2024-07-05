@@ -1,5 +1,6 @@
 import compact from "just-compact";
-import type { Manga } from "#/services/shikimori";
+import type { Manga } from "#/services/shikimori/types";
+import mapJoin from "#/utils/map-join";
 import { a, b, parseDescription } from "./utils";
 
 export function makeMangaText(manga: Manga) {
@@ -29,10 +30,10 @@ export function makeMangaText(manga: Manga) {
   // ++ Date
   result.push("\n", b("Дата: "));
   if (manga.kind !== "one_shot") {
-    const dates = compact([manga.airedOn, manga.releasedOn]).map(x => x.toLocaleDateString("ru"));
-    result.push(dates.join(" | ") || "Неизвестно");
+    const dates = compact([manga.airedOn?.date, manga.releasedOn?.date]);
+    result.push(mapJoin(dates, x => x.toLocaleDateString("ru"), " | ") || "Неизвестно");
   } else {
-    result.push(manga.airedOn?.toLocaleDateString("ru") || "Неизвестно");
+    result.push(manga.airedOn?.date?.toLocaleDateString("ru") || "Неизвестно");
   }
   // -- Date
   // ++ Score
@@ -54,11 +55,11 @@ export function makeMangaText(manga: Manga) {
   // -- Volumes & chapters
   // ++ Genres
   const genresTitle = manga.genres.length > 1 ? "Жанры" : "Жанр";
-  result.push("\n", b(`${genresTitle}: `), manga.genres.join(", "));
+  result.push("\n", b(`${genresTitle}: `), mapJoin(manga.genres, "russian"));
   // -- Genres
   // ++ Publishers
   const publishersTitle = manga.publishers.length > 1 ? "Издатели" : "Издатель";
-  result.push("\n", b(`${publishersTitle}: `), manga.publishers.join(", "));
+  result.push("\n", b(`${publishersTitle}: `), mapJoin(manga.publishers, "name"));
   // -- Publishers
   // ++ Description
   if (manga.descriptionHtml) {

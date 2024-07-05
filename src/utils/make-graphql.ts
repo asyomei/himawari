@@ -1,4 +1,12 @@
-import { type AnyZodObject, ZodArray, ZodEffects, ZodObject, type ZodTypeAny } from "zod";
+import {
+  type AnyZodObject,
+  ZodArray,
+  ZodEffects,
+  ZodNullable,
+  ZodObject,
+  ZodOptional,
+  type ZodTypeAny,
+} from "zod";
 
 export function makeGraphql(builder: (u: MakeGraphqlPublicUtils) => GQLQuery): string {
   const u = new MakeGraphqlUtils();
@@ -23,7 +31,7 @@ export function makeGraphql(builder: (u: MakeGraphqlPublicUtils) => GQLQuery): s
 export interface MakeGraphqlPublicUtils {
   var(name: string, type: string): GQLVariable;
   item(value: string): GQLEnumItem;
-  query(query: string, args: Record<string, unknown>, schema: AnyZodObject): GQLQuery;
+  query(query: string, schema: AnyZodObject, args: Record<string, unknown>): GQLQuery;
 }
 
 export class MakeGraphqlUtils implements MakeGraphqlPublicUtils {
@@ -42,8 +50,8 @@ export class MakeGraphqlUtils implements MakeGraphqlPublicUtils {
     return new GQLEnumItem(value);
   }
 
-  query(query: string, args: Record<string, unknown>, schema: AnyZodObject): GQLQuery {
-    return new GQLQuery(query, args, schema);
+  query(query: string, schema: AnyZodObject, args: Record<string, unknown>): GQLQuery {
+    return new GQLQuery(query, schema, args);
   }
 
   variables: GQLVariable[] = [];
@@ -63,8 +71,8 @@ class GQLEnumItem {
 class GQLQuery {
   constructor(
     readonly query: string,
-    readonly args: Record<string, unknown>,
     readonly schema: AnyZodObject,
+    readonly args: Record<string, unknown>,
   ) {}
 }
 
@@ -75,6 +83,10 @@ function getZodObjectNames(schema: ZodTypeAny): string {
 
   if (schema instanceof ZodArray) {
     return getZodObjectNames(schema.element);
+  }
+
+  if (schema instanceof ZodOptional || schema instanceof ZodNullable) {
+    return getZodObjectNames(schema.unwrap());
   }
 
   if (schema instanceof ZodObject) {

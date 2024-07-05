@@ -1,15 +1,8 @@
 import type { Redis } from "ioredis";
-import { z } from "zod";
 import trim from "#/utils/trim";
 import type { IChatService } from "./interface";
-
-export type History = z.infer<typeof history>;
-const history = z.array(
-  z.object({
-    role: z.enum(["user", "assistant"]),
-    content: z.string(),
-  }),
-);
+import { zHistory } from "./schemas";
+import type { History } from "./types";
 
 export class ChatService implements IChatService {
   constructor(private redis: Redis) {}
@@ -47,7 +40,7 @@ export class ChatService implements IChatService {
     if (!rawData) return;
 
     const data = JSON.parse(rawData) as [string, string][];
-    return history.parse(data.map(([r, m]) => ({ role: r, content: m })));
+    return zHistory.parse(data.map(([r, m]) => ({ role: r, content: m })));
   }
 
   private async save(id: string, history: History): Promise<void> {

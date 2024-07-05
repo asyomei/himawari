@@ -1,5 +1,6 @@
 import compact from "just-compact";
-import type { Anime, AnimeKind } from "#/services/shikimori";
+import type { Anime, AnimeKind } from "#/services/shikimori/types";
+import mapJoin from "#/utils/map-join";
 import { a, b, parseDescription } from "./utils";
 
 export function makeAnimeText(anime: Anime) {
@@ -31,10 +32,10 @@ export function makeAnimeText(anime: Anime) {
   // ++ Date
   result.push("\n", b("Дата: "));
   if (hasEps(anime.kind)) {
-    const dates = compact([anime.airedOn, anime.releasedOn]).map(x => x.toLocaleDateString("ru"));
-    result.push(dates.join(" | ") || "Неизвестно");
+    const dates = compact([anime.airedOn?.date, anime.releasedOn?.date]);
+    result.push(mapJoin(dates, x => x.toLocaleDateString("ru"), " | ") || "Неизвестно");
   } else {
-    result.push(anime.airedOn?.toLocaleDateString("ru") || "Неизвестно");
+    result.push(anime.airedOn?.date?.toLocaleDateString("ru") || "Неизвестно");
   }
   // -- Date
   // ++ Score
@@ -70,12 +71,12 @@ export function makeAnimeText(anime: Anime) {
   // -- Rating
   // ++ Genres
   const genresTitle = anime.genres.length > 1 ? "Жанры" : "Жанр";
-  result.push("\n", b(`${genresTitle}: `), anime.genres.join(", "));
+  result.push("\n", b(`${genresTitle}: `), mapJoin(anime.genres, "russian"));
   // -- Genres
   // ++ Studios
   if (anime.studios) {
     const studiosTitle = anime.studios.length > 1 ? "Студии" : "Студия";
-    result.push("\n", b(`${studiosTitle}: `), anime.studios.join(", "));
+    result.push("\n", b(`${studiosTitle}: `), mapJoin(anime.studios, "name"));
   }
   // -- Studios
   // ++ Fandubbers & fansubbers

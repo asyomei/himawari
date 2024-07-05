@@ -1,79 +1,77 @@
 import request from "graphql-request";
-import { z } from "zod";
+import { type ZodTypeAny, z } from "zod";
 import { makeGraphql } from "#/utils/make-graphql";
 import type { IShikimoriService } from "./interface";
-import {
-  type Anime,
-  type Basic,
-  type Manga,
-  type Screenshots,
-  type Type,
-  type Videos,
-  anime,
-  basic,
-  manga,
-  screenshots,
-  type,
-  videos,
-} from "./types";
-
-const GRAPHQL_URL = "https://shikimori.one/api/graphql";
+import { zAnime, zBasic, zManga, zScreenshot, zVideo } from "./schemas";
+import type { Anime, Basic, Manga, Screenshot, Type, Video } from "./types";
 
 const getSearchGql = (type: Type) =>
   makeGraphql(u => {
     const search = u.var("search", "String!");
     const page = u.var("page", "PositiveInt");
-    return u.query(type, { search, page, limit: 10 }, basic);
+
+    return u.query(type, zBasic, { search, page, limit: 10 });
   });
-const searchSchema = z.record(type, z.array(basic));
 
 const animeGql = makeGraphql(u => {
-  const ids = u.var("ids", "String!");
-  return u.query("animes", { ids }, anime);
-});
-const animeSchema = z.object({ animes: z.array(anime).max(1) });
+  const id = u.var("id", "String!");
 
-const screenshotsGql = makeGraphql(u => {
-  const ids = u.var("ids", "String!");
-  return u.query("animes", { ids }, screenshots);
+  return u.query("animes", zAnime, { ids: id });
 });
-const screenshotsSchema = z.object({ animes: z.array(screenshots).max(1) });
-
-const videosGql = makeGraphql(u => {
-  const ids = u.var("ids", "String!");
-  return u.query("animes", { ids }, videos);
-});
-const videosSchema = z.object({ animes: z.array(videos).max(1) });
 
 const mangaGql = makeGraphql(u => {
-  const ids = u.var("ids", "String!");
-  return u.query("mangas", { ids }, manga);
+  const id = u.var("id", "String!");
+
+  return u.query("mangas", zManga, { ids: id });
 });
-const mangaSchema = z.object({ mangas: z.array(manga).max(1) });
+
+const screenshotGql = makeGraphql(u => {
+  const id = u.var("id", "String!");
+
+  const schema = z.object({ screenshots: zScreenshot.array() });
+  return u.query("animes", schema, { ids: id });
+});
+
+const videoGql = makeGraphql(u => {
+  const id = u.var("id", "String!");
+
+  const schema = z.object({ videos: zVideo.array() });
+  return u.query("animes", schema, { ids: id });
+});
 
 export class ShikimoriService implements IShikimoriService {
   async search(type: Type, search: string, page?: number): Promise<Basic[]> {
-    const res = await request(GRAPHQL_URL, getSearchGql(type), { search, page });
-    return searchSchema.parse(res)[type]!;
+    const schema = z.object({ [type]: zBasic.array() }).transform(x => x[type]);
+    return graphql(getSearchGql(type), schema, { search, page });
   }
 
   async anime(id: string): Promise<Anime | undefined> {
-    const res = await request(GRAPHQL_URL, animeGql, { ids: id });
-    return animeSchema.parse(res).animes[0];
+    const schema = z.object({ animes: zAnime.array().max(1) }).transform(x => x.animes[0]);
+    return graphql(animeGql, schema, { id });
   }
 
-  async screenshots(animeId: string): Promise<Screenshots | undefined> {
-    const res = await request(GRAPHQL_URL, screenshotsGql, { ids: animeId });
-    return screenshotsSchema.parse(res).animes[0];
+  async screenshots(animeId: string): Promise<Screenshot[]> {
+    const schema = z.object({ screenshots: zScreenshot.array() }).transform(x => x.screenshots);
+    return graphql(screenshotGql, schema, { id: animeId });
   }
 
-  async videos(animeId: string): Promise<Videos | undefined> {
-    const res = await request(GRAPHQL_URL, videosGql, { ids: animeId });
-    return videosSchema.parse(res).animes[0];
+  async videos(animeId: string): Promise<Video[]> {
+    const schema = z.object({ videos: zVideo.array() }).transform(x => x.videos);
+    return graphql(videoGql, schema, { id: animeId });
   }
 
   async manga(id: string): Promise<Manga | undefined> {
-    const res = await request(GRAPHQL_URL, mangaGql, { ids: id });
-    return mangaSchema.parse(res).mangas[0];
+    const schema = z.object({ mangas: zManga.array().max(1) }).transform(x => x.mangas[0]);
+    return graphql(mangaGql, schema, { id });
   }
+}
+
+const GRAPHQL_URL = "https://shikimori.one/api/graphql";
+async function graphql<T extends ZodTypeAny>(
+  gql: string,
+  schema: T,
+  args: Record<string, unknown>,
+): Promise<z.output<T>> {
+  const res = await request(GRAPHQL_URL, gql, args);
+  return schema.parse(res);
 }

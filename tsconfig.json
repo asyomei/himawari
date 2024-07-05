@@ -15,8 +15,7 @@
       ]
     },
     "outDir": "./dist/",
-    "noErrorTruncation": true,
-    "skipLibCheck": true
+    "noErrorTruncation": true
   },
   "include": [
     "./src"

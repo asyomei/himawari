@@ -777,8 +777,8 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  peek-readable@5.1.0:
-    resolution: {integrity: sha512-Tq2I+yoz6Xq3S09E2PyjzOy/oYuNg5v7wyjmrw7OQYSKc7QnDs63q4RXFXraMoI6LZyiEOJ/wDEYzGDPhWwNPA==}
+  peek-readable@5.1.1:
+    resolution: {integrity: sha512-4hEOSH7KeEaZpMDF/xfm1W9fS5rT7Ett3BkXWHqAEzRLLwLaHkwOL+GvvpIEh9UrvX9BDhzfkvteslgraoH69w==}
     engines: {node: '>=14.16'}
 
   picomatch@2.3.1:
@@ -1666,7 +1666,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  peek-readable@5.1.0: {}
+  peek-readable@5.1.1: {}
 
   picomatch@2.3.1: {}
 
@@ -1790,7 +1790,7 @@ snapshots:
   strtok3@7.0.0:
     dependencies:
       '@tokenizer/token': 0.3.0
-      peek-readable: 5.1.0
+      peek-readable: 5.1.1
 
   to-regex-range@5.0.1:
     dependencies:

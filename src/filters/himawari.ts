@@ -10,16 +10,17 @@ export function himawari(...commands: string[]) {
     let text = ctx.msg?.text;
     if (!text) return false;
 
-    let lower = text.toLowerCase();
-    if (lower.startsWith("himawari ") || lower.startsWith("химавари ")) {
+    let lower = splitOnce(text, /\s+/)[0].toLowerCase();
+    if (lower === "himawari" || lower === "химавари") {
       text = splitOnce(text, /\s+/)[1];
     } else if (ctx.chat?.type !== "private") {
       return false;
     }
 
-    lower = text.toLowerCase();
-    if (commands.some(c => lower.startsWith(c))) {
-      (ctx as any).match = splitOnce(text, /\s+/)[1];
+    const rest = splitOnce(text, /\s+/);
+    lower = rest[0].toLowerCase();
+    if (commands.some(c => c === lower)) {
+      (ctx as any).match = rest[1];
       return true;
     }
 

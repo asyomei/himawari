@@ -6,7 +6,7 @@ import type { HandlerDeps } from "./deps";
 import { HelpHandler } from "./help";
 import { MemoryUsageHandler } from "./memory-usage";
 import { ShikimoriSearchHandler } from "./shikimori-search";
-import { unusedCallback } from "./unused-callback";
+import { unusedCallbackInline } from "./unused-callback-inline";
 
 export function setupHandlers(comp: Composer<Context>, deps: HandlerDeps) {
   const shikimori = new ShikimoriService();
@@ -20,5 +20,5 @@ export function setupHandlers(comp: Composer<Context>, deps: HandlerDeps) {
   );
 
   // handle unused callback (and inline too) lastly
-  comp.use(unusedCallback);
+  comp.use(unusedCallbackInline);
 }

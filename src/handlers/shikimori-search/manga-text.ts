@@ -1,18 +1,13 @@
 import compact from "just-compact";
 import type { Manga } from "#/services/shikimori/types";
 import mapJoin from "#/utils/map-join";
-import { a, b, parseDescription } from "./utils";
+import { b, parseDescription } from "./utils";
 
 export function makeMangaText(manga: Manga) {
   const result: any[] = [];
 
   // ++ Titles
-  const titles = compact([
-    b(manga.russian),
-    b(manga.name),
-    b(manga.japanese),
-    a("Shikimori", manga.url),
-  ]);
+  const titles = compact([b(manga.russian), b(manga.name), b(manga.japanese)]);
   result.push(titles.join("\n| "));
   // -- Titles
   // ++ Kind

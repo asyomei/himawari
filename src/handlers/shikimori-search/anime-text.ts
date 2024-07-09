@@ -1,18 +1,14 @@
 import compact from "just-compact";
 import type { Anime, AnimeKind } from "#/services/shikimori/types";
 import mapJoin from "#/utils/map-join";
-import { a, b, parseDescription } from "./utils";
+import { b, parseDescription } from "./utils";
 
 export function makeAnimeText(anime: Anime) {
   const result: any[] = [];
 
   // ++ Titles
-  const titles = compact([
-    b(anime.russian),
-    b(anime.name),
-    b(anime.japanese),
-    a("Shikimori", anime.url),
-  ]);
+  const titles = compact([b(anime.russian), b(anime.name), b(anime.japanese)]);
+  // titles = anime |> items ["russian", "name", "japanese"] |> compact
   result.push(titles.join("\n| "));
   // -- Titles
   // ++ Kind

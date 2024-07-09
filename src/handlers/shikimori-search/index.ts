@@ -11,7 +11,7 @@ import { himawari } from "#/filters/himawari";
 import type { IShikimoriService } from "#/services/shikimori";
 import { zType } from "#/services/shikimori/schemas";
 import type { Basic, Type, VideoKind } from "#/services/shikimori/types";
-import { Callbacks } from "#/utils/callbacks";
+import { Callback, type CallbackData } from "#/utils/callback";
 import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
@@ -30,15 +30,14 @@ export class ShikimoriSearchHandler extends BaseHandler {
     );
 
     const cbd = this.comp.on("callback_query:data");
+    cbd.filter(this.titleData.has()).filter(Callback.checkId, async (ctx, next) => {
+      if (ctx.data.type === "animes") return await this.onAnimeTitleData(ctx, ctx.data);
+      if (ctx.data.type === "mangas") return await this.onMangaTitleData(ctx, ctx.data);
+      await next();
+    });
     cbd
-      .filter(this.cb.has("shikiT", ctx => ctx.data.type === "animes"))
-      .filter(Callbacks.checkId, ctx => this.onAnimeTitleData(ctx, ctx.data));
-    cbd
-      .filter(this.cb.has("shikiT", ctx => ctx.data.type === "mangas"))
-      .filter(Callbacks.checkId, ctx => this.onMangaTitleData(ctx, ctx.data));
-    cbd
-      .filter(this.cb.has("shikiQ"))
-      .filter(Callbacks.checkId, ctx => this.onChangePageData(ctx, ctx.data));
+      .filter(this.queryData.has())
+      .filter(Callback.checkId, ctx => this.onChangePageData(ctx, ctx.data));
 
     this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx => this.onAnimeScreenshotsInline(ctx));
     this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx => this.onAnimeVideoInline(ctx));
@@ -67,7 +66,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
   async onChangePageData(
     ctx: Filter<Context, "callback_query">,
-    data: z.infer<(typeof this.cb)["schemas"]["shikiQ"]>,
+    data: CallbackData<typeof this.queryData>,
   ) {
     if (data.page < 1) {
       await ctx.answerCallbackQuery("Достигнуто начало поиска");
@@ -98,7 +97,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
   async onAnimeTitleData(
     ctx: Filter<Context, "callback_query:data">,
-    data: z.infer<(typeof this.cb)["schemas"]["shikiT"]>,
+    data: CallbackData<typeof this.titleData>,
   ) {
     const anime = await this.shikimori.anime(data.titleId);
     if (!anime) {
@@ -119,13 +118,14 @@ export class ShikimoriSearchHandler extends BaseHandler {
           InlineKeyboard.switchInlineCurrent("Скриншоты", `anime-screenshots:${anime.id}`),
           InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
         ],
+        [InlineKeyboard.url("Shikimori", anime.url)],
       ]),
     });
   }
 
   async onMangaTitleData(
     ctx: Filter<Context, "callback_query:data">,
-    data: z.infer<(typeof this.cb)["schemas"]["shikiT"]>,
+    data: CallbackData<typeof this.titleData>,
   ) {
     const manga = await this.shikimori.manga(data.titleId);
     if (!manga) {
@@ -141,6 +141,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
       parse_mode: "HTML",
       reply_parameters: makeReply(m),
       link_preview_options: { is_disabled: true },
+      reply_markup: InlineKeyboard.from([[InlineKeyboard.url("Shikimori", manga.url)]]),
     });
   }
 
@@ -201,26 +202,25 @@ export class ShikimoriSearchHandler extends BaseHandler {
     for (const basic of basics) {
       let name = basic.russian ?? basic.name;
       if (basic.isCensored) name = `[18+] ${name}`;
-      kb.text(name, this.cb.make("shikiT", { type, titleId: basic.id, fromId })).row();
+      kb.text(name, this.titleData.make({ type, titleId: basic.id, fromId })).row();
     }
 
-    kb.text("<< Назад", this.cb.make("shikiQ", { type, page: page - 1, fromId }));
+    kb.text("<< Назад", this.queryData.make({ type, page: page - 1, fromId }));
     kb.text(String(page), "nop");
-    kb.text("Вперёд >>", this.cb.make("shikiQ", { type, page: page + 1, fromId }));
+    kb.text("Вперёд >>", this.queryData.make({ type, page: page + 1, fromId }));
 
     return kb;
   }
 
-  private cb = new Callbacks({
-    shikiT: z.object({
-      type: zType,
-      titleId: z.string(),
-      fromId: z.number().int(),
-    }),
-    shikiQ: z.object({
-      type: zType,
-      page: z.number().int(),
-      fromId: z.number().int(),
-    }),
+  private titleData = new Callback("shikiT", {
+    type: zType,
+    titleId: z.string(),
+    fromId: z.number().int(),
+  });
+
+  private queryData = new Callback("shikiQ", {
+    type: zType,
+    page: z.number().int(),
+    fromId: z.number().int(),
   });
 }

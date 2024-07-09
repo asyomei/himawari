@@ -1,6 +1,6 @@
 import type { Context } from "grammy";
 
-export async function unusedCallback(ctx: Context) {
+export async function unusedCallbackInline(ctx: Context) {
   if (ctx.callbackQuery?.data) {
     const data = ctx.callbackQuery.data;
 

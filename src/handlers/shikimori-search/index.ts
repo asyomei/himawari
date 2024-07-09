@@ -147,6 +147,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
   async onAnimeScreenshotsInline(ctx: InlineQueryContext<Context>) {
     const titleId = ctx.match![1];
+    const offset = Number(ctx.inlineQuery.offset);
 
     const screenshots = await this.shikimori.screenshots(titleId);
     if (!screenshots.length) {
@@ -154,18 +155,21 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return;
     }
 
-    const results = screenshots.slice(0, 50).map(scr =>
+    const results = screenshots.slice(offset, offset + 50).map(scr =>
       InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl, {
         photo_width: 1920,
         photo_height: 1080,
         thumbnail_url: scr.originalUrl,
       }),
     );
-    await ctx.answerInlineQuery(results);
+    await ctx.answerInlineQuery(results, {
+      next_offset: results.length === 50 ? String(offset + 50) : "",
+    });
   }
 
   async onAnimeVideoInline(ctx: InlineQueryContext<Context>) {
     const titleId = ctx.match![1];
+    const offset = Number(ctx.inlineQuery.offset);
 
     const videos = await this.shikimori.videos(titleId);
     if (!videos.length) {
@@ -193,7 +197,9 @@ export class ShikimoriSearchHandler extends BaseHandler {
       );
     });
 
-    await ctx.answerInlineQuery(results);
+    await ctx.answerInlineQuery(results, {
+      next_offset: results.length === 50 ? String(offset + 50) : "",
+    });
   }
 
   buildBasicListMenu(basics: Basic[], type: Type, page: number, fromId: number) {

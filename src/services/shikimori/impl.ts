@@ -51,12 +51,16 @@ export class ShikimoriService implements IShikimoriService {
   }
 
   async screenshots(animeId: string): Promise<Screenshot[]> {
-    const schema = z.object({ screenshots: zScreenshot.array() }).transform(x => x.screenshots);
+    const schema = z
+      .object({ animes: z.object({ screenshots: zScreenshot.array() }).array().max(1) })
+      .transform(x => x.animes[0]?.screenshots ?? []);
     return graphql(screenshotGql, schema, { id: animeId });
   }
 
   async videos(animeId: string): Promise<Video[]> {
-    const schema = z.object({ videos: zVideo.array() }).transform(x => x.videos);
+    const schema = z
+      .object({ animes: z.object({ videos: zVideo.array() }).array().max(1) })
+      .transform(x => x.animes[0]?.videos ?? []);
     return graphql(videoGql, schema, { id: animeId });
   }
 

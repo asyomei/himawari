@@ -12,8 +12,8 @@ const getHelpText = (botName: string) => dedent`
   - сброс, очистка - очистка контекста чата
 
   Инлайн-режим (@${botName} <команда>):
-  - anime [название] - поиск аниме
-  - manga [название] - поиск манги
+  - аниме [название] - поиск аниме
+  - манга [название] - поиск манги
 `;
 
 export class HelpHandler extends BaseHandler {

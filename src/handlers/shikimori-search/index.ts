@@ -41,8 +41,12 @@ export class ShikimoriSearchHandler extends BaseHandler {
       .filter(this.queryData.has())
       .filter(Callback.checkId, ctx => this.onChangePageData(ctx, ctx.data));
 
-    this.comp.inlineQuery(/^anime (.+)$/, ctx => this.onSearchInline(ctx, "animes", ctx.match[1]));
-    this.comp.inlineQuery(/^manga (.+)$/, ctx => this.onSearchInline(ctx, "mangas", ctx.match[1]));
+    this.comp.inlineQuery(/^(anime|аниме) (.+)$/, ctx =>
+      this.onSearchInline(ctx, "animes", ctx.match[1]),
+    );
+    this.comp.inlineQuery(/^(manga|манга) (.+)$/, ctx =>
+      this.onSearchInline(ctx, "mangas", ctx.match[1]),
+    );
     this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx =>
       this.onAnimeScreenshotsInline(ctx, ctx.match[1]),
     );

@@ -5,6 +5,7 @@ import { ChatHandler } from "./chat";
 import type { HandlerDeps } from "./deps";
 import { HelpHandler } from "./help";
 import { MemoryUsageHandler } from "./memory-usage";
+import { PrivacyHandler } from "./privacy";
 import { ShikimoriSearchHandler } from "./shikimori-search";
 import { unusedCallbackInline } from "./unused-callback-inline";
 
@@ -14,6 +15,7 @@ export function setupHandlers(comp: Composer<Context>, deps: HandlerDeps) {
 
   comp.use(
     new HelpHandler(),
+    new PrivacyHandler(),
     new MemoryUsageHandler(),
     new ShikimoriSearchHandler(shikimori),
     new ChatHandler(chat),

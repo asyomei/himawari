@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": "true",
   "main": "dist/main.js",
+  "license": "MIT",
   "scripts": {
     "start": "pnpm build && node --enable-source-maps .",
     "dist": "node --enable-source-maps .",

@@ -7,12 +7,14 @@ import {
 } from "grammy";
 import compact from "just-compact";
 import { z } from "zod";
+import { INLINE_CACHE_TIME, MAX_INLINE_RESULTS } from "#/consts";
+import { nodeEnv } from "#/env";
 import { himawari } from "#/filters/himawari";
 import type { IShikimoriService } from "#/services/shikimori";
 import { zType } from "#/services/shikimori/schemas";
 import type { Basic, Type, VideoKind } from "#/services/shikimori/types";
 import { Callback, type CallbackData } from "#/utils/callback";
-import { makeReply } from "#/utils/telegram";
+import { makeReply, nextOffset } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
 import { makeMangaText } from "./manga-text";
@@ -39,8 +41,18 @@ export class ShikimoriSearchHandler extends BaseHandler {
       .filter(this.queryData.has())
       .filter(Callback.checkId, ctx => this.onChangePageData(ctx, ctx.data));
 
-    this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx => this.onAnimeScreenshotsInline(ctx));
-    this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx => this.onAnimeVideoInline(ctx));
+    this.comp.inlineQuery(/^anime (.+)$/, ctx => this.onSearchInline(ctx, "animes", ctx.match[1]));
+    this.comp.inlineQuery(/^manga (.+)$/, ctx => this.onSearchInline(ctx, "mangas", ctx.match[1]));
+    this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx =>
+      this.onAnimeScreenshotsInline(ctx, ctx.match[1]),
+    );
+    this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx => this.onAnimeVideoInline(ctx, ctx.match[1]));
+
+    this.comp.chosenInlineResult(/^(animes|mangas)-title:(\w+)$/, async ctx => {
+      const [type, titleId] = ctx.match.slice(1);
+      if (type === "animes") return await this.onAnimeSearchChosen(ctx, titleId);
+      if (type === "mangas") return await this.onMangaSearchChosen(ctx, titleId);
+    });
   }
 
   async onSearchCommand(ctx: Filter<Context, "message:text">, type: Type, search: string) {
@@ -145,8 +157,68 @@ export class ShikimoriSearchHandler extends BaseHandler {
     });
   }
 
-  async onAnimeScreenshotsInline(ctx: InlineQueryContext<Context>) {
-    const titleId = ctx.match![1];
+  async onSearchInline(ctx: InlineQueryContext<Context>, type: Type, search: string) {
+    const offset = Number(ctx.inlineQuery.offset);
+    const page = offset / MAX_INLINE_RESULTS + 1;
+
+    const basics = await this.shikimori.search(type, search, page, MAX_INLINE_RESULTS);
+    const results = basics.slice(offset, offset + MAX_INLINE_RESULTS).map(basic => {
+      let title = basic.russian || basic.name;
+      if (basic.isCensored) title = `[18+] ${title}`;
+      const description = basic.russian ? basic.name : undefined;
+      return InlineQueryResultBuilder.article(`${type}-title:${basic.id}`, title, {
+        description,
+        reply_markup: InlineKeyboard.from([[InlineKeyboard.text("Загрузка...", "nop")]]),
+      }).text(title);
+    });
+
+    await ctx.answerInlineQuery(results, {
+      next_offset: nextOffset(results.length, offset),
+      cache_time: INLINE_CACHE_TIME[nodeEnv],
+    });
+  }
+
+  async onAnimeSearchChosen(ctx: Context, titleId: string) {
+    const anime = await this.shikimori.anime(titleId);
+    if (!anime) {
+      await ctx.editMessageText("Что-то пошло не так");
+      return;
+    }
+
+    await ctx.editMessageText(makeAnimeText(anime), {
+      parse_mode: "HTML",
+      link_preview_options: {
+        show_above_text: true,
+        url: anime.poster.originalUrl,
+      },
+      reply_markup: InlineKeyboard.from([
+        [
+          InlineKeyboard.switchInlineCurrent("Скриншоты", `anime-screenshots:${anime.id}`),
+          InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
+        ],
+        [InlineKeyboard.url("Shikimori", anime.url)],
+      ]),
+    });
+  }
+
+  async onMangaSearchChosen(ctx: Context, titleId: string) {
+    const manga = await this.shikimori.manga(titleId);
+    if (!manga) {
+      await ctx.editMessageText("Что-то пошло не так");
+      return;
+    }
+
+    await ctx.editMessageText(makeMangaText(manga), {
+      parse_mode: "HTML",
+      link_preview_options: {
+        show_above_text: true,
+        url: manga.poster.originalUrl,
+      },
+      reply_markup: InlineKeyboard.from([[InlineKeyboard.url("Shikimori", manga.url)]]),
+    });
+  }
+
+  async onAnimeScreenshotsInline(ctx: InlineQueryContext<Context>, titleId: string) {
     const offset = Number(ctx.inlineQuery.offset);
 
     const screenshots = await this.shikimori.screenshots(titleId);
@@ -155,7 +227,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return;
     }
 
-    const results = screenshots.slice(offset, offset + 50).map(scr =>
+    const results = screenshots.slice(offset, offset + MAX_INLINE_RESULTS).map(scr =>
       InlineQueryResultBuilder.photo(`anime-scr:${scr.id}`, scr.originalUrl, {
         photo_width: 1920,
         photo_height: 1080,
@@ -163,12 +235,12 @@ export class ShikimoriSearchHandler extends BaseHandler {
       }),
     );
     await ctx.answerInlineQuery(results, {
-      next_offset: results.length === 50 ? String(offset + 50) : "",
+      next_offset: nextOffset(results.length, offset),
+      cache_time: INLINE_CACHE_TIME[nodeEnv],
     });
   }
 
-  async onAnimeVideoInline(ctx: InlineQueryContext<Context>) {
-    const titleId = ctx.match![1];
+  async onAnimeVideoInline(ctx: InlineQueryContext<Context>, titleId: string) {
     const offset = Number(ctx.inlineQuery.offset);
 
     const videos = await this.shikimori.videos(titleId);
@@ -190,7 +262,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
         other: "Другое",
       })[kind];
 
-    const results = videos.slice(0, 50).map(vid => {
+    const results = videos.slice(offset, offset + MAX_INLINE_RESULTS).map(vid => {
       const name = vid.name ?? getName(vid.kind);
       return InlineQueryResultBuilder.videoHtml(vid.id, name, vid.playerUrl, vid.imageUrl).text(
         name + "\n" + vid.url,
@@ -198,7 +270,8 @@ export class ShikimoriSearchHandler extends BaseHandler {
     });
 
     await ctx.answerInlineQuery(results, {
-      next_offset: results.length === 50 ? String(offset + 50) : "",
+      next_offset: nextOffset(results.length, offset),
+      cache_time: INLINE_CACHE_TIME[nodeEnv],
     });
   }
 

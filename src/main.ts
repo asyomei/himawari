@@ -20,7 +20,7 @@ async function start() {
   run(bot, {
     runner: {
       fetch: {
-        allowed_updates: ["message", "callback_query", "inline_query"],
+        allowed_updates: ["message", "callback_query", "inline_query", "chosen_inline_result"],
       },
     },
   });

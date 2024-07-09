@@ -9,8 +9,9 @@ const getSearchGql = (type: Type) =>
   makeGraphql(u => {
     const search = u.var("search", "String!");
     const page = u.var("page", "PositiveInt");
+    const limit = u.var("limit", "PositiveInt!");
 
-    return u.query(type, zBasic, { search, page, limit: 10 });
+    return u.query(type, zBasic, { search, page, limit });
   });
 
 const animeGql = makeGraphql(u => {
@@ -40,9 +41,9 @@ const videoGql = makeGraphql(u => {
 });
 
 export class ShikimoriService implements IShikimoriService {
-  async search(type: Type, search: string, page?: number): Promise<Basic[]> {
+  async search(type: Type, search: string, page?: number, limit = 10): Promise<Basic[]> {
     const schema = z.object({ [type]: zBasic.array() }).transform(x => x[type]);
-    return graphql(getSearchGql(type), schema, { search, page });
+    return graphql(getSearchGql(type), schema, { search, page, limit });
   }
 
   async anime(id: string): Promise<Anime | undefined> {

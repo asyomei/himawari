@@ -4,12 +4,16 @@ import { himawari } from "#/filters/himawari";
 import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "./base";
 
-const HELP_TEXT = dedent`
+const getHelpText = (botName: string) => dedent`
   Команды (химавари <команда>):
   - аниме [название] - поиск аниме
   - манга [название] - поиск манги
   - чат [сообщение] - общение с GPT-4
   - сброс, очистка - очистка контекста чата
+
+  Инлайн-режим (@${botName} <команда>):
+  - anime [название] - поиск аниме
+  - manga [название] - поиск манги
 `;
 
 export class HelpHandler extends BaseHandler {
@@ -22,7 +26,7 @@ export class HelpHandler extends BaseHandler {
   }
 
   async onHelpCommand(ctx: Filter<Context, "message:text">) {
-    await ctx.reply(HELP_TEXT, {
+    await ctx.reply(getHelpText(ctx.me.username), {
       reply_parameters: makeReply(ctx.msg),
     });
   }

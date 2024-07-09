@@ -82,6 +82,9 @@ export function makeAnimeText(anime: Anime) {
   if (anime.descriptionHtml) {
     result.push("\n\n", parseDescription(anime.descriptionHtml));
   }
+  if (anime.descriptionSource) {
+    result.push("\n", "— ", anime.descriptionSource);
+  }
   // -- Description
 
   return result.join("");

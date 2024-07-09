@@ -60,6 +60,9 @@ export function makeMangaText(manga: Manga) {
   if (manga.descriptionHtml) {
     result.push("\n\n", parseDescription(manga.descriptionHtml));
   }
+  if (manga.descriptionSource) {
+    result.push("\n", "— ", manga.descriptionSource);
+  }
   // -- Description
 
   return result.join("");

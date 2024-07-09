@@ -70,6 +70,7 @@ export const zAnime = z.object({
   genres: z.object({ russian: z.string() }).array(),
   studios: z.object({ name: z.string() }).array(),
   descriptionHtml: z.string().nullish(),
+  descriptionSource: z.string().nullish(),
 });
 
 export const zMangaKind = z.enum([
@@ -100,4 +101,5 @@ export const zManga = z.object({
   genres: z.object({ russian: z.string() }).array(),
   publishers: z.object({ name: z.string() }).array(),
   descriptionHtml: z.string().nullish(),
+  descriptionSource: z.string().nullish(),
 });

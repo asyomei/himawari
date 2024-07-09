@@ -8,7 +8,6 @@ export function makeAnimeText(anime: Anime) {
 
   // ++ Titles
   const titles = compact([b(anime.russian), b(anime.name), b(anime.japanese)]);
-  // titles = anime |> items ["russian", "name", "japanese"] |> compact
   result.push(titles.join("\n| "));
   // -- Titles
   // ++ Kind

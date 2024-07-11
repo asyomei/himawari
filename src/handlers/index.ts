@@ -7,7 +7,7 @@ import { HelpHandler } from "./help";
 import { MemoryUsageHandler } from "./memory-usage";
 import { PrivacyHandler } from "./privacy";
 import { ShikimoriSearchHandler } from "./shikimori-search";
-import { unusedCallbackInline } from "./unused-callback-inline";
+import { unhandledUpdate } from "./unhandled-update";
 
 export function setupHandlers(comp: Composer<Context>, deps: HandlerDeps) {
   const shikimori = new ShikimoriService();
@@ -21,6 +21,6 @@ export function setupHandlers(comp: Composer<Context>, deps: HandlerDeps) {
     new ChatHandler(chat),
   );
 
-  // handle unused callback (and inline too) lastly
-  comp.use(unusedCallbackInline);
+  // handle unused callbacks and inlines lastly
+  comp.use(unhandledUpdate);
 }

@@ -6,8 +6,10 @@ import escapeHTML from "#/utils/escape-html";
 export const a = (name: any, url: any) => `<a href="${url}">${escapeHTML(name)}</a>`;
 export const b = (text: any) => `<b>${escapeHTML(text)}</b>`;
 
-export const makeDate = (date: IncompleteDate) =>
-  compact([date.day, date.month, date.year]).join(".");
+export const makeDate = (date: IncompleteDate) => {
+  const zero = (s: number | null | undefined) => s && `0${s}`.slice(-2);
+  compact([zero(date.day), zero(date.month), date.year]).join(".");
+};
 
 export function parseDescription(html: string): string {
   const doc = parseHTML(html);

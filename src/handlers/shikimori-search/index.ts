@@ -14,11 +14,13 @@ import type { VideoKindEnum } from "#/gql";
 import type { ShikimoriService } from "#/services/shikimori";
 import type { AnimeBasic, MangaBasic } from "#/services/shikimori/types";
 import { Callback, type CallbackData } from "#/utils/callback";
+import escapeHTML from "#/utils/escape-html";
 import { makeReply, nextOffset } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
 import { makeCharacterText } from "./character-text";
 import { makeMangaText } from "./manga-text";
+import { b } from "./utils";
 
 type Type = "anime" | "manga";
 
@@ -78,9 +80,11 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return;
     }
 
-    const name = { anime: "аниме", manga: "манги" }[type];
+    const action = b({ anime: "Поиск аниме", manga: "Поиск манги" }[type]);
+    const query = escapeHTML(search);
 
-    const m = await ctx.reply(`Поиск ${name}: ${search}...`, {
+    const m = await ctx.reply(`${action}: ${query}...`, {
+      parse_mode: "HTML",
       reply_parameters: makeReply(ctx.msg),
     });
 
@@ -89,7 +93,8 @@ export class ShikimoriSearchHandler extends BaseHandler {
         ? await this.shikimori.searchAnime(search)
         : await this.shikimori.searchManga(search);
 
-    await ctx.api.editMessageText(m.chat.id, m.message_id, `Поиск ${name}: ${search}`, {
+    await ctx.api.editMessageText(m.chat.id, m.message_id, `${action}: ${query}`, {
+      parse_mode: "HTML",
       reply_markup: this.buildBasicListMenu(basics, type, 1, ctx.from.id),
     });
   }
@@ -142,7 +147,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     await ctx.answerCallbackQuery();
 
-    let msgId = ctx.msgId;
+    let msgId: number | undefined = undefined;
     if (anime.poster) {
       const m = await ctx.replyWithPhoto(anime.poster.originalUrl, { caption });
       msgId = m.message_id;
@@ -177,7 +182,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     await ctx.answerCallbackQuery();
 
-    let msgId = ctx.msgId;
+    let msgId: number | undefined = undefined;
     if (manga.poster) {
       const m = await ctx.replyWithPhoto(manga.poster.originalUrl, { caption });
       msgId = m.message_id;
@@ -210,7 +215,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return InlineQueryResultBuilder.article(`${type}-title:${basic.id}`, title, {
         description,
         url: basic.url,
-        thumbnail_url: basic.poster?.originalUrl,
+        thumbnail_url: !basic.isCensored ? basic.poster?.originalUrl : undefined,
         reply_markup: InlineKeyboard.from([[InlineKeyboard.text("Загрузка...", "nop")]]),
       }).text(title);
     });

@@ -8,7 +8,7 @@ export const b = (text: any) => `<b>${escapeHTML(text)}</b>`;
 
 export const makeDate = (date: IncompleteDate) => {
   const zero = (s: number | null | undefined) => s && `0${s}`.slice(-2);
-  compact([zero(date.day), zero(date.month), date.year]).join(".");
+  return compact([zero(date.day), zero(date.month), date.year]).join(".");
 };
 
 export function parseDescription(html: string): string {

@@ -149,7 +149,10 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     let msgId: number | undefined = undefined;
     if (anime.poster) {
-      const m = await ctx.replyWithPhoto(anime.poster.originalUrl, { caption });
+      const m = await ctx.replyWithPhoto(anime.poster.originalUrl, {
+        caption,
+        has_spoiler: !!anime.isCensored,
+      });
       msgId = m.message_id;
     }
 

@@ -1,31 +1,11 @@
-import type { z } from "zod";
-import type {
-  zAnime,
-  zAnimeKind,
-  zAnimeStatus,
-  zBasic,
-  zManga,
-  zMangaKind,
-  zMangaStatus,
-  zRating,
-  zScreenshot,
-  zType,
-  zVideo,
-  zVideoKind,
-} from "./schemas";
+import type { ShikimoriService } from ".";
 
-export type Type = z.output<typeof zType>;
-export type Basic = z.output<typeof zBasic>;
+type Funcs = (typeof ShikimoriService)["prototype"];
+type Get<K extends keyof Funcs> = NonNullable<Awaited<ReturnType<Funcs[K]>>>;
 
-export type Rating = z.output<typeof zRating>;
-export type Screenshot = z.output<typeof zScreenshot>;
-export type VideoKind = z.output<typeof zVideoKind>;
-export type Video = z.output<typeof zVideo>;
+export type AnimeBasic = Get<"searchAnime">[number];
+export type MangaBasic = Get<"searchManga">[number];
 
-export type AnimeKind = z.output<typeof zAnimeKind>;
-export type AnimeStatus = z.output<typeof zAnimeStatus>;
-export type Anime = z.output<typeof zAnime>;
-
-export type MangaKind = z.output<typeof zMangaKind>;
-export type MangaStatus = z.output<typeof zMangaStatus>;
-export type Manga = z.output<typeof zManga>;
+export type AnimeInfo = Get<"anime">;
+export type MangaInfo = Get<"manga">;
+export type CharacterInfo = Get<"character">;

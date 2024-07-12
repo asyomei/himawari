@@ -10,31 +10,34 @@ import { z } from "zod";
 import { INLINE_CACHE_TIME, MAX_INLINE_RESULTS } from "#/consts";
 import { nodeEnv } from "#/env";
 import { himawari } from "#/filters/himawari";
-import type { IShikimoriService } from "#/services/shikimori";
-import { zType } from "#/services/shikimori/schemas";
-import type { Basic, Type, VideoKind } from "#/services/shikimori/types";
+import type { VideoKindEnum } from "#/gql";
+import type { ShikimoriService } from "#/services/shikimori";
+import type { AnimeBasic, MangaBasic } from "#/services/shikimori/types";
 import { Callback, type CallbackData } from "#/utils/callback";
 import { makeReply, nextOffset } from "#/utils/telegram";
 import { BaseHandler } from "../base";
 import { makeAnimeText } from "./anime-text";
+import { makeCharacterText } from "./character-text";
 import { makeMangaText } from "./manga-text";
 
+type Type = "anime" | "manga";
+
 export class ShikimoriSearchHandler extends BaseHandler {
-  constructor(private shikimori: IShikimoriService) {
+  constructor(private shikimori: ShikimoriService) {
     super();
 
     const msg = this.comp.on("message:text");
     msg.filter(himawari("anime", "animes", "аниме"), ctx =>
-      this.onSearchCommand(ctx, "animes", ctx.match),
+      this.onSearchCommand(ctx, "anime", ctx.match),
     );
     msg.filter(himawari("manga", "mangas", "манга"), ctx =>
-      this.onSearchCommand(ctx, "mangas", ctx.match),
+      this.onSearchCommand(ctx, "manga", ctx.match),
     );
 
     const cbd = this.comp.on("callback_query:data");
     cbd.filter(this.titleData.has()).filter(Callback.checkId, async (ctx, next) => {
-      if (ctx.data.type === "animes") return await this.onAnimeTitleData(ctx, ctx.data);
-      if (ctx.data.type === "mangas") return await this.onMangaTitleData(ctx, ctx.data);
+      if (ctx.data.type === "anime") return await this.onAnimeTitleData(ctx, ctx.data);
+      if (ctx.data.type === "manga") return await this.onMangaTitleData(ctx, ctx.data);
       await next();
     });
     cbd
@@ -42,21 +45,29 @@ export class ShikimoriSearchHandler extends BaseHandler {
       .filter(Callback.checkId, ctx => this.onChangePageData(ctx, ctx.data));
 
     this.comp.inlineQuery(/^(?:anime|аниме) (.+)$/i, ctx =>
-      this.onSearchInline(ctx, "animes", ctx.match[1]),
+      this.onSearchInline(ctx, "anime", ctx.match[1]),
     );
     this.comp.inlineQuery(/^(?:manga|манга) (.+)$/i, ctx =>
-      this.onSearchInline(ctx, "mangas", ctx.match[1]),
+      this.onSearchInline(ctx, "manga", ctx.match[1]),
     );
     this.comp.inlineQuery(/^anime-screenshots:(\w+)$/, ctx =>
       this.onAnimeScreenshotsInline(ctx, ctx.match[1]),
     );
-    this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx => this.onAnimeVideoInline(ctx, ctx.match[1]));
+    this.comp.inlineQuery(/^anime-video:(\w+)$/, ctx =>
+      this.onAnimeVideosInline(ctx, ctx.match[1]),
+    );
+    this.comp.inlineQuery(/^title-characters:(anime|manga):(\w+)$/, ctx =>
+      this.onCharacterInline(ctx, ctx.match[1] as never, ctx.match[2]),
+    );
 
-    this.comp.chosenInlineResult(/^(animes|mangas)-title:(\w+)$/, async ctx => {
+    this.comp.chosenInlineResult(/^(anime|manga)-title:(\w+)$/, async ctx => {
       const [type, titleId] = ctx.match.slice(1);
-      if (type === "animes") return await this.onAnimeSearchChosen(ctx, titleId);
-      if (type === "mangas") return await this.onMangaSearchChosen(ctx, titleId);
+      if (type === "anime") return await this.onAnimeSearchChosen(ctx, titleId);
+      if (type === "manga") return await this.onMangaSearchChosen(ctx, titleId);
     });
+    this.comp.chosenInlineResult(/^title-character:(\w+)$/, ctx =>
+      this.onCharacterChosen(ctx, ctx.match[1]),
+    );
   }
 
   async onSearchCommand(ctx: Filter<Context, "message:text">, type: Type, search: string) {
@@ -67,13 +78,16 @@ export class ShikimoriSearchHandler extends BaseHandler {
       return;
     }
 
-    const name = { animes: "аниме", mangas: "манги" }[type];
+    const name = { anime: "аниме", manga: "манги" }[type];
 
     const m = await ctx.reply(`Поиск ${name}: ${search}...`, {
       reply_parameters: makeReply(ctx.msg),
     });
 
-    const basics = await this.shikimori.search(type, search);
+    const basics =
+      type === "anime"
+        ? await this.shikimori.searchAnime(search)
+        : await this.shikimori.searchManga(search);
 
     await ctx.api.editMessageText(m.chat.id, m.message_id, `Поиск ${name}: ${search}`, {
       reply_markup: this.buildBasicListMenu(basics, type, 1, ctx.from.id),
@@ -96,7 +110,10 @@ export class ShikimoriSearchHandler extends BaseHandler {
     }
 
     const search = text.slice(text.indexOf(":") + 2);
-    const basics = await this.shikimori.search(data.type, search, data.page);
+    const basics =
+      data.type === "anime"
+        ? await this.shikimori.searchAnime(search, data.page)
+        : await this.shikimori.searchManga(search, data.page);
 
     if (basics.length === 0) {
       await ctx.answerCallbackQuery("Достигнут конец поиска");
@@ -124,16 +141,23 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const caption = compact([anime.russian, anime.name]).join(" | ");
 
     await ctx.answerCallbackQuery();
-    const m = await ctx.replyWithPhoto(anime.poster.originalUrl, { caption });
+
+    let msgId = ctx.msgId;
+    if (anime.poster) {
+      const m = await ctx.replyWithPhoto(anime.poster.originalUrl, { caption });
+      msgId = m.message_id;
+    }
+
     await ctx.reply(makeAnimeText(anime), {
       parse_mode: "HTML",
-      reply_parameters: makeReply(m),
+      reply_parameters: makeReply(msgId),
       link_preview_options: { is_disabled: true },
       reply_markup: InlineKeyboard.from([
         [
           InlineKeyboard.switchInlineCurrent("Скриншоты", `anime-screenshots:${anime.id}`),
           InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
         ],
+        [InlineKeyboard.switchInlineCurrent("Персонажи", `title-characters:anime:${anime.id}`)],
         [InlineKeyboard.url("Shikimori", anime.url)],
       ]),
     });
@@ -152,12 +176,21 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const caption = compact([manga.russian, manga.name]).join(" | ");
 
     await ctx.answerCallbackQuery();
-    const m = await ctx.replyWithPhoto(manga.poster.originalUrl, { caption });
+
+    let msgId = ctx.msgId;
+    if (manga.poster) {
+      const m = await ctx.replyWithPhoto(manga.poster.originalUrl, { caption });
+      msgId = m.message_id;
+    }
+
     await ctx.reply(makeMangaText(manga), {
       parse_mode: "HTML",
-      reply_parameters: makeReply(m),
+      reply_parameters: makeReply(msgId),
       link_preview_options: { is_disabled: true },
-      reply_markup: InlineKeyboard.from([[InlineKeyboard.url("Shikimori", manga.url)]]),
+      reply_markup: InlineKeyboard.from([
+        [InlineKeyboard.switchInlineCurrent("Персонажи", `title-characters:manga:${manga.id}`)],
+        [InlineKeyboard.url("Shikimori", manga.url)],
+      ]),
     });
   }
 
@@ -165,13 +198,19 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const offset = Number(ctx.inlineQuery.offset);
     const page = offset / MAX_INLINE_RESULTS + 1;
 
-    const basics = await this.shikimori.search(type, search, page, MAX_INLINE_RESULTS);
+    const basics =
+      type === "anime"
+        ? await this.shikimori.searchAnime(search, page, MAX_INLINE_RESULTS)
+        : await this.shikimori.searchManga(search, page, MAX_INLINE_RESULTS);
+
     const results = basics.slice(offset, offset + MAX_INLINE_RESULTS).map(basic => {
       let title = basic.russian || basic.name;
       if (basic.isCensored) title = `[18+] ${title}`;
       const description = basic.russian ? basic.name : undefined;
       return InlineQueryResultBuilder.article(`${type}-title:${basic.id}`, title, {
         description,
+        url: basic.url,
+        thumbnail_url: basic.poster?.originalUrl,
         reply_markup: InlineKeyboard.from([[InlineKeyboard.text("Загрузка...", "nop")]]),
       }).text(title);
     });
@@ -191,15 +230,15 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     await ctx.editMessageText(makeAnimeText(anime), {
       parse_mode: "HTML",
-      link_preview_options: {
-        show_above_text: true,
-        url: anime.poster.originalUrl,
-      },
+      link_preview_options: anime.poster
+        ? { show_above_text: true, url: anime.poster.originalUrl }
+        : { is_disabled: true },
       reply_markup: InlineKeyboard.from([
         [
           InlineKeyboard.switchInlineCurrent("Скриншоты", `anime-screenshots:${anime.id}`),
           InlineKeyboard.switchInlineCurrent("Видео", `anime-video:${anime.id}`),
         ],
+        [InlineKeyboard.switchInlineCurrent("Персонажи", `title-characters:anime:${anime.id}`)],
         [InlineKeyboard.url("Shikimori", anime.url)],
       ]),
     });
@@ -214,11 +253,13 @@ export class ShikimoriSearchHandler extends BaseHandler {
 
     await ctx.editMessageText(makeMangaText(manga), {
       parse_mode: "HTML",
-      link_preview_options: {
-        show_above_text: true,
-        url: manga.poster.originalUrl,
-      },
-      reply_markup: InlineKeyboard.from([[InlineKeyboard.url("Shikimori", manga.url)]]),
+      link_preview_options: manga.poster
+        ? { show_above_text: true, url: manga.poster.originalUrl }
+        : { is_disabled: true },
+      reply_markup: InlineKeyboard.from([
+        [InlineKeyboard.switchInlineCurrent("Персонажи", `title-characters:manga:${manga.id}`)],
+        [InlineKeyboard.url("Shikimori", manga.url)],
+      ]),
     });
   }
 
@@ -226,7 +267,7 @@ export class ShikimoriSearchHandler extends BaseHandler {
     const offset = Number(ctx.inlineQuery.offset);
 
     const screenshots = await this.shikimori.screenshots(titleId);
-    if (!screenshots.length) {
+    if (!screenshots?.length) {
       await ctx.answerInlineQuery([]);
       return;
     }
@@ -244,16 +285,16 @@ export class ShikimoriSearchHandler extends BaseHandler {
     });
   }
 
-  async onAnimeVideoInline(ctx: InlineQueryContext<Context>, titleId: string) {
+  async onAnimeVideosInline(ctx: InlineQueryContext<Context>, titleId: string) {
     const offset = Number(ctx.inlineQuery.offset);
 
     const videos = await this.shikimori.videos(titleId);
-    if (!videos.length) {
+    if (!videos?.length) {
       await ctx.answerInlineQuery([]);
       return;
     }
 
-    const getName = (kind: VideoKind) =>
+    const getName = (kind: VideoKindEnum) =>
       ({
         pv: "PV",
         cm: "CM",
@@ -279,7 +320,57 @@ export class ShikimoriSearchHandler extends BaseHandler {
     });
   }
 
-  buildBasicListMenu(basics: Basic[], type: Type, page: number, fromId: number) {
+  async onCharacterInline(ctx: InlineQueryContext<Context>, titleType: Type, titleId: string) {
+    const offset = Number(ctx.inlineQuery.offset);
+
+    const chars =
+      titleType === "anime"
+        ? await this.shikimori.animeCharacters(titleId)
+        : await this.shikimori.mangaCharacters(titleId);
+    if (!chars?.length) {
+      await ctx.answerInlineQuery([]);
+      return;
+    }
+
+    const results = chars.slice(offset, offset + MAX_INLINE_RESULTS).map(char => {
+      const name = char.russian ?? char.name;
+      const description = char.russian ? char.name : undefined;
+      return InlineQueryResultBuilder.article(`title-character:${char.id}`, name, {
+        description,
+        url: char.url,
+        thumbnail_url: char.poster?.originalUrl,
+        reply_markup: InlineKeyboard.from([[InlineKeyboard.text("Загрузка...", "nop")]]),
+      }).text(name);
+    });
+
+    await ctx.answerInlineQuery(results, {
+      next_offset: nextOffset(results.length, offset),
+      cache_time: INLINE_CACHE_TIME[nodeEnv],
+    });
+  }
+
+  async onCharacterChosen(ctx: Context, charId: string) {
+    const char = await this.shikimori.character(charId);
+    if (!char) {
+      await ctx.editMessageText("Что-то пошло не так");
+      return;
+    }
+
+    await ctx.editMessageText(makeCharacterText(char), {
+      parse_mode: "HTML",
+      link_preview_options: char.poster
+        ? { show_above_text: true, url: char.poster.originalUrl }
+        : { is_disabled: true },
+      reply_markup: InlineKeyboard.from([[InlineKeyboard.url("Shikimori", char.url)]]),
+    });
+  }
+
+  buildBasicListMenu(
+    basics: (AnimeBasic | MangaBasic)[],
+    type: Type,
+    page: number,
+    fromId: number,
+  ) {
     const kb = new InlineKeyboard();
 
     for (const basic of basics) {
@@ -296,13 +387,13 @@ export class ShikimoriSearchHandler extends BaseHandler {
   }
 
   private titleData = new Callback("shikiT", {
-    type: zType,
+    type: z.enum(["anime", "manga"]),
     titleId: z.string(),
     fromId: z.number().int(),
   });
 
   private queryData = new Callback("shikiQ", {
-    type: zType,
+    type: z.enum(["anime", "manga"]),
     page: z.number().int(),
     fromId: z.number().int(),
   });

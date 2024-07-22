@@ -8,12 +8,15 @@ export class AnimalHandler extends BaseHandler {
     super();
 
     const msg = this.comp.on("message:text");
-    msg.filter(himawari("cat", "meow", "кот", "кошка", "мяу"), ctx => this.onCommand(ctx, "cat"));
-    msg.filter(himawari("dog", "woof", "пес", "собака", "гав"), ctx => this.onCommand(ctx, "dog"));
-    msg.filter(himawari("fox", "лис", "лиса"), ctx => this.onCommand(ctx, "fox"));
-    msg.filter(himawari("fish", "рыба", "рыбка"), ctx => this.onCommand(ctx, "fish"));
-    msg.filter(himawari("alpaca", "альпака"), ctx => this.onCommand(ctx, "alpaca"));
-    msg.filter(himawari("bird", "птица", "птичка"), ctx => this.onCommand(ctx, "bird"));
+    const addAnimal = (type: Type, ...names: string[]) =>
+      msg.filter(himawari(type, ...names), ctx => this.onCommand(ctx, type));
+
+    addAnimal("cat", "meow", "кот", "кошка", "мяу");
+    addAnimal("dog", "woof", "пес", "собака", "гав");
+    addAnimal("fox", "лис", "лиса");
+    addAnimal("fish", "рыба", "рыбка");
+    addAnimal("alpaca", "альпака");
+    addAnimal("bird", "птица", "птичка");
   }
 
   async onCommand(ctx: Context, type: Type) {

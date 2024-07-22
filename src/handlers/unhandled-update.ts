@@ -7,9 +7,7 @@ export async function unhandledUpdate(ctx: Context) {
     if (data !== "nop") {
       console.log(`Callback query with data "${data}" didn't handle`);
     }
-    await ctx.answerCallbackQuery();
-  } else if (ctx.inlineQuery) {
-    await ctx.answerInlineQuery([], { cache_time: 0 });
+    await ctx.answerCallbackQuery().catch(() => {});
   } else if (ctx.chosenInlineResult) {
     const id = ctx.chosenInlineResult.result_id;
     console.log(`Chosen inline result with id "${id}" didn't handle`);

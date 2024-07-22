@@ -1,4 +1,5 @@
 import type { Context, Filter } from "grammy";
+import { round } from "remeda";
 import { himawari } from "#/filters/himawari";
 import { BaseHandler } from "./base";
 
@@ -13,7 +14,7 @@ export class MemoryUsageHandler extends BaseHandler {
   }
 
   async onMemoryCommand(ctx: Filter<Context, "message:text">, memoryUsageBytes: number) {
-    const usageMegabytes = Number((memoryUsageBytes / 1024 / 1024).toFixed(2));
+    const usageMegabytes = round(memoryUsageBytes / 1024 / 1024, 2);
     await ctx.reply(`Потребление памяти: ${usageMegabytes} МБ`);
   }
 }

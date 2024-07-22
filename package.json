@@ -29,18 +29,18 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@0no-co/graphqlsp": "^1.12.11",
+    "@0no-co/graphqlsp": "^1.12.12",
     "@biomejs/biome": "^1.8.3",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.2",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@swc/cli": "^0.4.0",
-    "@swc/core": "^1.6.13",
+    "@swc/core": "^1.7.0",
     "@types/debug": "^4.1.12",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.11",
     "@types/node-fetch": "^2.6.11",
     "tsc-alias": "^1.8.10",
-    "type-fest": "^4.21.0",
+    "type-fest": "^4.22.1",
     "typescript": "^5.5.3"
   },
   "pnpm": {

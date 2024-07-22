@@ -32,11 +32,11 @@ export class ChatService implements IChatService {
   }
 
   async clear(id: string): Promise<void> {
-    await this.redis.del(`chatbot-gpt4:${id}`);
+    await this.redis.del(`chat-gpt4:${id}`);
   }
 
   private async load(id: string): Promise<History | undefined> {
-    const rawData = await this.redis.get(`chatbot-gpt4:${id}`);
+    const rawData = await this.redis.get(`chat-gpt4:${id}`);
     if (!rawData) return;
 
     const data = JSON.parse(rawData) as [string, string][];
@@ -45,6 +45,6 @@ export class ChatService implements IChatService {
 
   private async save(id: string, history: History): Promise<void> {
     const data = history.map(Object.values);
-    await this.redis.set(`chatbot-gpt4:${id}`, JSON.stringify(data));
+    await this.redis.set(`chat-gpt4:${id}`, JSON.stringify(data));
   }
 }

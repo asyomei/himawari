@@ -1,5 +1,5 @@
-import compact from "just-compact";
 import type { CharacterInfo } from "#/services/shikimori/types";
+import { compact } from "#/utils/compact";
 import { b, parseDescription } from "./utils";
 
 export function makeCharacterText(char: CharacterInfo) {

@@ -1,6 +1,6 @@
-import compact from "just-compact";
 import type { AnimeKindEnum } from "#/gql";
 import type { AnimeInfo } from "#/services/shikimori/types";
+import { compact } from "#/utils/compact";
 import mapJoin from "#/utils/map-join";
 import { b, makeDate, parseDescription } from "./utils";
 

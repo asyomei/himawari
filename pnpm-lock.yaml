@@ -41,12 +41,12 @@ importers:
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
-      just-compact:
-        specifier: ^3.2.0
-        version: 3.2.0
       node-html-parser:
         specifier: ^6.1.13
         version: 6.1.13
+      remeda:
+        specifier: ^2.6.0
+        version: 2.6.0
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -1688,9 +1688,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  just-compact@3.2.0:
-    resolution: {integrity: sha512-sOrec92s8U4hzuj8FhbwLYxgvqS+BqGoU+LjgqW0r1MpXLJ7xkKwiFnt5Jr9Se3A62DCJ18+14Jvc1euzmWwbA==}
-
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -2074,6 +2071,9 @@ packages:
 
   remeda@1.61.0:
     resolution: {integrity: sha512-caKfSz9rDeSKBQQnlJnVW3mbVdFgxgGWQKq1XlFokqjf+hQD5gxutLGTTY2A/x24UxVyJe9gH5fAkFI63ULw4A==}
+
+  remeda@2.6.0:
+    resolution: {integrity: sha512-uwq9c2s91Mry5YQiPGWtW9vF2DgTIVLzCIZZYz6Rcv8hsgWFQjavOaP24m9ZNF2mur+eq0x2EqRQlPBaLZuYrA==}
 
   remedial@1.0.8:
     resolution: {integrity: sha512-/62tYiOe6DzS5BqVsNpH/nkGlX45C/Sp6V+NtiN6JQNS1Viay7cWkazmRkrQrdFj2eshDe96SIQNIoMxqhzBOg==}
@@ -4443,8 +4443,6 @@ snapshots:
 
   json5@2.2.3: {}
 
-  just-compact@3.2.0: {}
-
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -4788,6 +4786,10 @@ snapshots:
       - encoding
 
   remeda@1.61.0: {}
+
+  remeda@2.6.0:
+    dependencies:
+      type-fest: 4.22.1
 
   remedial@1.0.8: {}
 

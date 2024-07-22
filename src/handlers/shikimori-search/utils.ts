@@ -1,6 +1,6 @@
-import compact from "just-compact";
 import { parse as parseHTML } from "node-html-parser";
 import type { IncompleteDate } from "#/gql";
+import { compact } from "#/utils/compact";
 import escapeHTML from "#/utils/escape-html";
 
 export const a = (name: any, url: any) => `<a href="${url}">${escapeHTML(name)}</a>`;

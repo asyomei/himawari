@@ -1,5 +1,5 @@
-import compact from "just-compact";
 import type { MangaInfo } from "#/services/shikimori/types";
+import { compact } from "#/utils/compact";
 import mapJoin from "#/utils/map-join";
 import { b, makeDate, parseDescription } from "./utils";
 

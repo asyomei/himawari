@@ -5,7 +5,6 @@ import {
   type InlineQueryContext,
   InlineQueryResultBuilder,
 } from "grammy";
-import compact from "just-compact";
 import { z } from "zod";
 import { INLINE_CACHE_TIME, MAX_INLINE_RESULTS } from "#/consts";
 import { nodeEnv } from "#/env";
@@ -14,6 +13,7 @@ import type { VideoKindEnum } from "#/gql";
 import type { ShikimoriService } from "#/services/shikimori";
 import type { AnimeBasic, MangaBasic } from "#/services/shikimori/types";
 import { Callback, type CallbackData } from "#/utils/callback";
+import { compact } from "#/utils/compact";
 import escapeHTML from "#/utils/escape-html";
 import { makeReply, nextOffset } from "#/utils/telegram";
 import { BaseHandler } from "../base";

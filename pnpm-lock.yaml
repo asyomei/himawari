@@ -57,6 +57,9 @@ importers:
       '@biomejs/biome':
         specifier: ^1.8.3
         version: 1.8.3
+      '@grammyjs/auto-chat-action':
+        specifier: ^0.1.1
+        version: 0.1.1(grammy@1.27.0)
       '@graphql-codegen/cli':
         specifier: ^5.0.2
         version: 5.0.2(@types/node@20.14.11)(graphql@16.9.0)(typescript@5.5.3)
@@ -464,6 +467,11 @@ packages:
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
       typescript: ^5.0.0
+
+  '@grammyjs/auto-chat-action@0.1.1':
+    resolution: {integrity: sha512-70Jdy+keIri4452tluaZpKtHag5gD8pNczoXqajsnsx7pJC5wg3DAQ5unpt0xJb8KsVBAGWuJb298SBl3TVecg==}
+    peerDependencies:
+      grammy: ^1.0.0
 
   '@grammyjs/auto-retry@2.0.1':
     resolution: {integrity: sha512-4W2T3KeRp1IERUUqMV6jjr+3z0FD6qe7DgXdykdqzNmOb2O+MUM7cqWCcWzbIjUVwRyFyHeH+vREO1ZvKppCrg==}
@@ -2913,6 +2921,10 @@ snapshots:
       '@0no-co/graphql.web': 1.0.7(graphql@16.9.0)
       graphql: 16.9.0
       typescript: 5.5.3
+
+  '@grammyjs/auto-chat-action@0.1.1(grammy@1.27.0)':
+    dependencies:
+      grammy: 1.27.0
 
   '@grammyjs/auto-retry@2.0.1(grammy@1.27.0)':
     dependencies:

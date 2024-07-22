@@ -1,7 +1,8 @@
 import { Bot, GrammyError } from "grammy";
+import type { MyContext } from "./types/context";
 
 export function createBot(token: string) {
-  const bot = new Bot(token);
+  const bot = new Bot<MyContext>(token);
 
   bot.catch(({ error, stack }) => {
     if (error instanceof GrammyError) {

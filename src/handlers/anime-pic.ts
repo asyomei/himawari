@@ -1,4 +1,4 @@
-import { type Context, InlineKeyboard } from "grammy";
+import { type Context, type Filter, InlineKeyboard } from "grammy";
 import { himawari } from "#/filters/himawari";
 import {
   type AnimePicService,
@@ -7,6 +7,7 @@ import {
   zGifType,
   zPicType,
 } from "#/services/anime-pic";
+import { makeReply } from "#/utils/telegram";
 import { BaseHandler } from "./base";
 
 export class AnimePicHandler extends BaseHandler {
@@ -72,9 +73,10 @@ export class AnimePicHandler extends BaseHandler {
     });
   }
 
-  async onGifCommand(ctx: Context, type: GifType) {
+  async onGifCommand(ctx: Filter<Context, "message:text">, type: GifType) {
     const gif = await this.pic.gif(type);
     await ctx.replyWithAnimation(gif.url, {
+      reply_parameters: makeReply(ctx.message.reply_to_message),
       reply_markup: InlineKeyboard.from([
         [InlineKeyboard.switchInlineCurrent(gif.anime_name, `anime ${gif.anime_name}`)],
       ]),

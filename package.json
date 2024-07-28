@@ -33,16 +33,16 @@
     "@biomejs/biome": "^1.8.3",
     "@grammyjs/auto-chat-action": "^0.1.1",
     "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "^4.3.2",
+    "@graphql-codegen/client-preset": "^4.3.3",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@swc/cli": "^0.4.0",
-    "@swc/core": "^1.7.0",
+    "@swc/core": "^1.7.3",
     "@types/debug": "^4.1.12",
-    "@types/node": "^20.14.11",
+    "@types/node": "^22.0.0",
     "@types/node-fetch": "^2.6.11",
     "tsc-alias": "^1.8.10",
-    "type-fest": "^4.22.1",
-    "typescript": "^5.5.3"
+    "type-fest": "^4.23.0",
+    "typescript": "^5.5.4"
   },
   "pnpm": {
     "overrides": {

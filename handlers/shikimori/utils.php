@@ -14,7 +14,7 @@ function parse_description(string $html): string
   $text = $doc->plaintext;
 
   foreach ($doc->find('div[data-dynamic="spoiler_block"]') as $el) {
-    $raw = $doc->plaintext;
+    $raw = $el->plaintext;
     $spoiler = htmlspecialchars(str_replace('спойлер', '', $raw));
     $text = str_replace($raw, "<b>Спойлер:</b> <tg-spoiler>$spoiler</tg-spoiler>", $text);
   }

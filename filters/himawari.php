@@ -20,7 +20,7 @@ function himawari(string ...$commands)
     [$command, $rest] = preg_split('/\s+/', $text, 2);
     $lower = mb_strtolower($command);
     foreach ($commands as $c) {
-      if ($command === $c) {
+      if ($lower === $c) {
         $ctx->match = $rest ?? '';
         return true;
       }

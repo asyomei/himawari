@@ -27,13 +27,9 @@ class ShikimoriHandler
     if (cbd_filter('shikiT', type: 'manga')($ctx))
       return $this->sendMangaInfo($ctx, $ctx->match);
 
-    $q = $ctx->inlineQuery;
-    if ($q && $q->query === 'test')
-      return $this->searchInline($ctx, 'anime', 'gochuu');
-
-    if (inline_filter('/^(?:anime|аниме)\s+(.+)$/')($ctx))
+    if (inline_filter('/^(?:anime|аниме)\s+(.+)$/i')($ctx))
       return $this->searchInline($ctx, 'anime', $ctx->match[1]);
-    if (inline_filter('/^(?:manga|манга)\s+(.+)$/')($ctx))
+    if (inline_filter('/^(?:manga|манга)\s+(.+)$/i')($ctx))
       return $this->searchInline($ctx, 'manga', $ctx->match[1]);
 
     if (chosen_inline_filter('/^anime-title:(\w+)$/')($ctx))

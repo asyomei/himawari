@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "module": "es2022",
+    "target": "es2022",
+    "moduleResolution": "bundler",
+    "inlineSourceMap": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["*.mjs", "src"],
+  "exclude": ["**/node_modules", "**/dist"]
+}

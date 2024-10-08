@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@deskeen/markdown':
+        specifier: ^5.3.1
+        version: 5.3.1
       '@grammyjs/auto-retry':
         specifier: ^2.0.2
         version: 2.0.2(grammy@1.30.0)
@@ -103,6 +106,9 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
+
+  '@deskeen/markdown@5.3.1':
+    resolution: {integrity: sha512-OfV4pdmcwul5yU3b3qhonxlBLXDvhNuLiLcEDZyBg7izsAKjObXSNP2tgcmk2IoS/Yg+tSZ3+oqbkv7nQlq0yA==}
 
   '@esbuild/aix-ppc64@0.24.0':
     resolution: {integrity: sha512-WtKdFM7ls47zkKHFVzMz8opM7LkcsIp9amDUBIAWirg70RM71WRSjdILPsY5Uv1D42ZpUfaPILDlfactHgsRkw==}
@@ -423,6 +429,8 @@ snapshots:
 
   '@biomejs/cli-win32-x64@1.9.3':
     optional: true
+
+  '@deskeen/markdown@5.3.1': {}
 
   '@esbuild/aix-ppc64@0.24.0':
     optional: true

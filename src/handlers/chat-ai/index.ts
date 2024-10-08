@@ -1,4 +1,5 @@
 import { setTimeout } from "node:timers/promises"
+import mdparser from "@deskeen/markdown"
 import { Composer, type Filter, type HearsContext } from "grammy"
 import type { MyContext } from "#/types/context"
 import { clearHistory, sayMessage } from "./service"
@@ -34,13 +35,18 @@ async function chat(ctx: HearsContext<Filter<MyContext, "message:text">>): Promi
     parse_mode: "HTML",
   })
 
-  const answer = await sayMessage(ctx.from.id, text).catch(() => undefined)
+  const answer = await sayMessage(ctx.from.id, text).catch(console.error)
   if (!answer) {
     await m.editText("<i>Возникла ошибка</i> :(", { parse_mode: "HTML" })
     return
   }
 
-  await m.editText(answer)
+  try {
+    await m.editText(parseAnswer(answer), { parse_mode: "HTML" })
+  } catch {
+    const text = `${answer}\n\n----------\n[Во время форматирования произошла ошибка. Ответ был отправлен как есть]`
+    await m.editText(text)
+  }
 }
 
 async function forgetChat(ctx: Filter<MyContext, "message:text">): Promise<void> {
@@ -53,4 +59,36 @@ async function forgetChat(ctx: Filter<MyContext, "message:text">): Promise<void>
 
   await setTimeout(3000)
   await ctx.deleteMessages([ctx.msgId, m.message_id]).catch(() => {})
+}
+
+function parseAnswer(text: string): string {
+  let html: string = mdparser.parse(text, {
+    allowHeader: false,
+    allowUnorderedList: true,
+    allowUnorderedNestedList: false,
+    allowOrderedList: false,
+    allowOrderedNestedList: false,
+    allowHorizontalLine: false,
+    allowFootnote: false,
+    allowHTMLAttributes: false,
+  }).innerHTML
+
+  html = html
+    .replaceAll("<p>", "")
+    .replaceAll("</p>", "\n")
+    .replaceAll("<br>", "\n")
+    .replaceAll("<sup>", "^(")
+    .replaceAll("</sup>", ")")
+    .replaceAll("<sub>", "(")
+    .replaceAll("</sub>", ")")
+
+  const lines = html.split("\n")
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i]!.startsWith("* ")) {
+      lines[i] = lines[i]!.replace("* ", "• ")
+    }
+  }
+
+  html = lines.join("\n")
+  return html
 }

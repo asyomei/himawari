@@ -11,6 +11,7 @@
   },
   "packageManager": "pnpm@9.12.1",
   "dependencies": {
+    "@deskeen/markdown": "^5.3.1",
     "@grammyjs/auto-retry": "^2.0.2",
     "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/ratelimiter": "^1.2.0",

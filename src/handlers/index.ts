@@ -1,11 +1,10 @@
 import type { Bot, MiddlewareFn } from "grammy"
 import type { MyContext } from "#/types/context"
-import { chatAiHandler } from "./chat-ai"
 import { shikimoriHandler } from "./shikimori"
 import { startHandler } from "./start"
 
 export function setupHandlers(bot: Bot<MyContext>): void {
-  bot.use(startHandler, chatAiHandler, shikimoriHandler)
+  bot.use(startHandler, shikimoriHandler)
   bot.use(onUnhandled)
 }
 

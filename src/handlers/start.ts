@@ -7,7 +7,6 @@ export { comp as startHandler }
 comp.on("message:text").command("start", start)
 
 const START_TEXT = `Приветик, %s!
-/help_chat - Разговор с нейросетью
 /help_anime - Поиск аниме, манги и их персонажей`
 
 async function start(ctx: CommandContext<MyContext>): Promise<void> {

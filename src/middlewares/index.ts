@@ -2,16 +2,13 @@ import { autoRetry } from "@grammyjs/auto-retry"
 import { hydrate } from "@grammyjs/hydrate"
 import { limit } from "@grammyjs/ratelimiter"
 import { apiThrottler } from "@grammyjs/transformer-throttler"
-import type { Bot, MiddlewareFn } from "grammy"
+import type { Bot } from "grammy"
 import type { MyContext } from "#/types/context"
+import { dropMsgViaMe } from "./drop-msg-via-me"
 
 export function setupMiddlewares(bot: Bot<MyContext>): void {
   bot.use(dropMsgViaMe, userLimit, chatLimit, hydrate())
   bot.api.config.use(autoRetry(), apiThrottler())
-}
-
-const dropMsgViaMe: MiddlewareFn<MyContext> = async (ctx, next) => {
-  if (ctx.msg?.via_bot?.id !== ctx.me.id) await next()
 }
 
 const userLimit = limit<MyContext, never>({

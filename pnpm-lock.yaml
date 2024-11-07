@@ -14,6 +14,9 @@ importers:
       '@grammyjs/auto-retry':
         specifier: ^2.0.2
         version: 2.0.2(grammy@1.31.0)
+      '@grammyjs/auto-thread':
+        specifier: github:grammyjs/auto-thread
+        version: https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f(grammy@1.31.0)
       '@grammyjs/hydrate':
         specifier: ^1.4.1
         version: 1.4.1(grammy@1.31.0)
@@ -259,6 +262,13 @@ packages:
     engines: {node: '>=12.20.0 || >=14.13.1'}
     peerDependencies:
       grammy: ^1.10.0
+
+  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f':
+    resolution: {tarball: https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f}
+    version: 2.0.1
+    engines: {node: ^12.20.0 || >=14.13.1}
+    peerDependencies:
+      grammy: ^1.12.0
 
   '@grammyjs/hydrate@1.4.1':
     resolution: {integrity: sha512-xvd7XXoVHEhxBV2M8UHDRYkZlv32JioHfs+0l+eN34mkJJJBchuRDgRY3fkVJko8o1hGFHHLAJJTlEs2OAMolA==}
@@ -510,6 +520,10 @@ snapshots:
       grammy: 1.31.0
     transitivePeerDependencies:
       - supports-color
+
+  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f(grammy@1.31.0)':
+    dependencies:
+      grammy: 1.31.0
 
   '@grammyjs/hydrate@1.4.1(grammy@1.31.0)':
     dependencies:

@@ -13,6 +13,7 @@
   "dependencies": {
     "@deskeen/markdown": "^5.3.1",
     "@grammyjs/auto-retry": "^2.0.2",
+    "@grammyjs/auto-thread": "github:grammyjs/auto-thread",
     "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/ratelimiter": "^1.2.0",
     "@grammyjs/runner": "^2.0.3",

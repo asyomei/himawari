@@ -13,31 +13,31 @@ importers:
         version: 5.3.1
       '@grammyjs/auto-retry':
         specifier: ^2.0.2
-        version: 2.0.2(grammy@1.31.0)
+        version: 2.0.2(grammy@1.32.0)
       '@grammyjs/auto-thread':
         specifier: github:grammyjs/auto-thread
-        version: https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f(grammy@1.31.0)
+        version: https://codeload.github.com/grammyjs/auto-thread/tar.gz/3beb99e4d5e9228d87bb40149d35c98fe8ca0344(grammy@1.32.0)
       '@grammyjs/hydrate':
         specifier: ^1.4.1
-        version: 1.4.1(grammy@1.31.0)
+        version: 1.4.1(grammy@1.32.0)
       '@grammyjs/ratelimiter':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.2.1
+        version: 1.2.1
       '@grammyjs/runner':
         specifier: ^2.0.3
-        version: 2.0.3(grammy@1.31.0)
+        version: 2.0.3(grammy@1.32.0)
       '@grammyjs/transformer-throttler':
         specifier: ^1.2.1
-        version: 1.2.1(grammy@1.31.0)
+        version: 1.2.1(grammy@1.32.0)
       dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
+        specifier: ^16.4.6
+        version: 16.4.6
       envalid:
         specifier: ^8.0.0
         version: 8.0.0
       grammy:
-        specifier: ^1.31.0
-        version: 1.31.0
+        specifier: ^1.32.0
+        version: 1.32.0
       node-html-parser:
         specifier: ^6.1.13
         version: 6.1.13
@@ -46,14 +46,14 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       '@types/node':
-        specifier: ^22.9.0
-        version: 22.9.0
+        specifier: ^22.10.1
+        version: 22.10.1
       esbuild:
         specifier: ^0.24.0
         version: 0.24.0
       typescript:
-        specifier: ^5.6.3
-        version: 5.6.3
+        specifier: ^5.7.2
+        version: 5.7.2
 
 packages:
 
@@ -263,8 +263,8 @@ packages:
     peerDependencies:
       grammy: ^1.10.0
 
-  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f':
-    resolution: {tarball: https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f}
+  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/3beb99e4d5e9228d87bb40149d35c98fe8ca0344':
+    resolution: {tarball: https://codeload.github.com/grammyjs/auto-thread/tar.gz/3beb99e4d5e9228d87bb40149d35c98fe8ca0344}
     version: 2.0.1
     engines: {node: ^12.20.0 || >=14.13.1}
     peerDependencies:
@@ -276,8 +276,8 @@ packages:
     peerDependencies:
       grammy: ^1.20.1
 
-  '@grammyjs/ratelimiter@1.2.0':
-    resolution: {integrity: sha512-xBkH/ATJsuv5JgVYX9yQM9DNg75Qqjw+gh82lVsBn4j+d0DkxxC+kuy6WFoB96Cb6oifQfaBJL8CTikdYG4v0A==}
+  '@grammyjs/ratelimiter@1.2.1':
+    resolution: {integrity: sha512-4bmVUBCBnIb2epbDiBLCvvnVjaYg7kDCPR1Ptt6gqoxm5vlD8BjainYv+yjF6221hu2KUv8QAckumDI+6xyGsQ==}
 
   '@grammyjs/runner@2.0.3':
     resolution: {integrity: sha512-nckmTs1dPWfVQteK9cxqxzE+0m1VRvluLWB8UgFzsjg62w3qthPJt0TYtJBEdG7OedvfQq4vnFAyE6iaMkR42A==}
@@ -291,11 +291,11 @@ packages:
     peerDependencies:
       grammy: ^1.0.0
 
-  '@grammyjs/types@3.15.0':
-    resolution: {integrity: sha512-XQHJNlF6AuJgVPYL8mEWrYk4Pg/FoP9PryTVSObtf/SWRIk0dCBkIwSaGGoXa1VDrLVWl/dIP79FgS2acJJjdg==}
+  '@grammyjs/types@3.16.0':
+    resolution: {integrity: sha512-hElpAJL7/p8PnHvOM0K8+iU0lrVqFgVHzsAknNomZXWT9sFyj5tmEmsAM0JCYBTNvWx5/g5jWU87+PlgUDZ/YA==}
 
-  '@types/node@22.9.0':
-    resolution: {integrity: sha512-vuyHg81vvWA1Z1ELfvLko2c8f34gyA0zaic0+Rllc5lbCnbSyuvb2Oxpm6TAUAC/2xZN3QGqxBNggD1nNR2AfQ==}
+  '@types/node@22.10.1':
+    resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -336,8 +336,8 @@ packages:
   domutils@3.1.0:
     resolution: {integrity: sha512-H78uMmQtI2AhgDJjWeQmHwJJ2bLPD3GMmO7Zja/ZZh84wkm+4ut+IUnUdRa8uCGX88DiVx1j6FRe1XfxEgjEZA==}
 
-  dotenv@16.4.5:
-    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+  dotenv@16.4.6:
+    resolution: {integrity: sha512-JhcR/+KIjkkjiU8yEpaB/USlzVi3i5whwOjpIRNGi9svKEXZSe+Qp6IWAjFjv+2GViAoDRCUv/QLNziQxsLqDg==}
     engines: {node: '>=12'}
 
   entities@4.5.0:
@@ -357,8 +357,8 @@ packages:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
 
-  grammy@1.31.0:
-    resolution: {integrity: sha512-JcuogF2NzLl2x/L/cRMkjr2+/dfiFy+9fiKrnt2TQyNMWEXGpsWnG86ey1et3eLmaL8QY30n6RyxmDlH8SVSIg==}
+  grammy@1.32.0:
+    resolution: {integrity: sha512-FUH7q0BhMyqsx8abo45iwKBnHX6Q9A4o1uUTVA3sjzyQtLzzYLeDgzCgUqjaKUh2xF/+LZBw2lgJkRWlB2RKeg==}
     engines: {node: ^12.20.0 || >=14.13.1}
 
   he@1.2.0:
@@ -389,13 +389,13 @@ packages:
   tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@6.19.8:
-    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+  undici-types@6.20.0:
+    resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -514,39 +514,39 @@ snapshots:
   '@esbuild/win32-x64@0.24.0':
     optional: true
 
-  '@grammyjs/auto-retry@2.0.2(grammy@1.31.0)':
+  '@grammyjs/auto-retry@2.0.2(grammy@1.32.0)':
     dependencies:
       debug: 4.3.7
-      grammy: 1.31.0
+      grammy: 1.32.0
     transitivePeerDependencies:
       - supports-color
 
-  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/5e05f37b3357308e360a5bccf77b7163f1c3ce0f(grammy@1.31.0)':
+  '@grammyjs/auto-thread@https://codeload.github.com/grammyjs/auto-thread/tar.gz/3beb99e4d5e9228d87bb40149d35c98fe8ca0344(grammy@1.32.0)':
     dependencies:
-      grammy: 1.31.0
+      grammy: 1.32.0
 
-  '@grammyjs/hydrate@1.4.1(grammy@1.31.0)':
-    dependencies:
-      abort-controller: 3.0.0
-      grammy: 1.31.0
-
-  '@grammyjs/ratelimiter@1.2.0': {}
-
-  '@grammyjs/runner@2.0.3(grammy@1.31.0)':
+  '@grammyjs/hydrate@1.4.1(grammy@1.32.0)':
     dependencies:
       abort-controller: 3.0.0
-      grammy: 1.31.0
+      grammy: 1.32.0
 
-  '@grammyjs/transformer-throttler@1.2.1(grammy@1.31.0)':
+  '@grammyjs/ratelimiter@1.2.1': {}
+
+  '@grammyjs/runner@2.0.3(grammy@1.32.0)':
+    dependencies:
+      abort-controller: 3.0.0
+      grammy: 1.32.0
+
+  '@grammyjs/transformer-throttler@1.2.1(grammy@1.32.0)':
     dependencies:
       bottleneck: 2.19.5
-      grammy: 1.31.0
+      grammy: 1.32.0
 
-  '@grammyjs/types@3.15.0': {}
+  '@grammyjs/types@3.16.0': {}
 
-  '@types/node@22.9.0':
+  '@types/node@22.10.1':
     dependencies:
-      undici-types: 6.19.8
+      undici-types: 6.20.0
 
   abort-controller@3.0.0:
     dependencies:
@@ -588,7 +588,7 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
 
-  dotenv@16.4.5: {}
+  dotenv@16.4.6: {}
 
   entities@4.5.0: {}
 
@@ -625,9 +625,9 @@ snapshots:
 
   event-target-shim@5.0.1: {}
 
-  grammy@1.31.0:
+  grammy@1.32.0:
     dependencies:
-      '@grammyjs/types': 3.15.0
+      '@grammyjs/types': 3.16.0
       abort-controller: 3.0.0
       debug: 4.3.7
       node-fetch: 2.7.0
@@ -656,9 +656,9 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  typescript@5.6.3: {}
+  typescript@5.7.2: {}
 
-  undici-types@6.19.8: {}
+  undici-types@6.20.0: {}
 
   webidl-conversions@3.0.1: {}
 

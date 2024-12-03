@@ -1,5 +1,5 @@
 # himawari bot
-[telegram bot](https://t.me/himawaridesu_bot) with different functionality, mainly search anime & manga info using [shikimori api](https://shikimori.one/api/doc)
+[telegram bot](https://t.me/himawaridesu_bot), searches anime & manga info using [shikimori api](https://shikimori.one/api/doc)
 
 ## usage
 1. clone this repo: `git clone https://github.com/asyomei/himawari-bot`

@@ -1,0 +1,61 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'Asyomei/himawari-bot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          key: cache-${{ github.run_id }}-${{ github.run_attempt }}
+          path: dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        with:
+          key: cache-${{ github.run_id }}-${{ github.run_attempt }}
+          path: dist/
+
+      - name: Deploy
+        env:
+          SSH_DEST: ${{ secrets.SSH_DEST }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          ALWAYS_KEY: ${{ secrets.ALWAYS_KEY }}
+          ALWAYS_ACCOUNT: ${{ secrets.ALWAYS_ACCOUNT }}
+          ALWAYS_SERVICE_ID: ${{ secrets.ALWAYS_SERVICE_ID }}
+        run: bash deploy.sh

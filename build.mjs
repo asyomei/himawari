@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises'
+import { cp, rm } from 'node:fs/promises'
 import { build } from 'esbuild'
 
 await rm('dist', { recursive: true, force: true })
@@ -20,3 +20,5 @@ await build({
     ].join('\n'),
   },
 })
+
+await cp('assets', 'dist/assets', { recursive: true })

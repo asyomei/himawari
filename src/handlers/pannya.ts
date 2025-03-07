@@ -1,7 +1,6 @@
 import { bot } from '#/bot'
-
-const VIDEO_FILE_ID = 'BAACAgIAAxkDAAJPrmfJ-acWfo3-MDnwESen4FHRxU1HAAKVdAAC43tQStM605kiJm5bNgQ'
+import { InputFile } from 'grammy'
 
 bot.command('pannya', async ctx => {
-  await ctx.replyWithVideo(VIDEO_FILE_ID)
+  await ctx.replyWithVideo(new InputFile('assets/Pannya-Chan.mp4'))
 })

@@ -9,4 +9,4 @@ echo "===> Deploy"
 tar cf - -C dist . | sshp "tar x -C $REMOTE_PATH"
 
 echo "===> Restart service"
-curl --basic --user "$ALWAYS_KEY account=$ALWAYS_ACCOUNT:" --data '' --request POST https://api.alwaysdata.com/v1/service/$ALWAYS_SERVICE_ID/restart/
+curl --silent --basic --user "$ALWAYS_KEY account=$ALWAYS_ACCOUNT:" --data '' --request POST https://api.alwaysdata.com/v1/service/$ALWAYS_SERVICE_ID/restart/

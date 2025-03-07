@@ -1,5 +1,8 @@
 {
-  "yaml.schemas": {
-    "https://json.schemastore.org/github-workflow.json": ".github/workflows/deploy.yml"
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports.ts": "explicit",
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   }
 }

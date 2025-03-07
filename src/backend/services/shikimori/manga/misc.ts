@@ -1,7 +1,7 @@
-import { InlineKeyboard, type InlineQueryContext, InlineQueryResultBuilder } from "grammy"
-import type { MyContext } from "#/types/context"
-import { INLINE_ITEMS_COUNT } from "../consts"
-import { api } from "./api"
+import { InlineKeyboard, type InlineQueryContext, InlineQueryResultBuilder } from 'grammy'
+import { INLINE_ITEMS_COUNT } from '#/consts'
+import type { MyContext } from '#/types/context'
+import { api } from './api'
 
 export async function mangaCharactersInline(ctx: InlineQueryContext<MyContext>): Promise<void> {
   const mangaId = ctx.match[1]!
@@ -17,13 +17,13 @@ export async function mangaCharactersInline(ctx: InlineQueryContext<MyContext>):
       thumbnail_url: character.poster?.originalUrl,
       description: character.name,
       url: character.url,
-      reply_markup: new InlineKeyboard().text("Загрузка...", "nothing"),
+      reply_markup: new InlineKeyboard().text('Загрузка...', 'nothing'),
     })
     return article.text(title)
   })
 
   await ctx.answerInlineQuery(articles, {
     cache_time: 0,
-    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : "",
+    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : '',
   })
 }

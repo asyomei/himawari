@@ -1,26 +1,28 @@
-import { parseDescription } from "../utils"
+import { parseDescription } from '../parse-description'
+import type { api } from './api'
 
-type Writer = (buf: any[], manga: any) => boolean
+type Manga = Awaited<ReturnType<typeof api.info>>
+type Writer = (buf: any[], manga: Manga) => boolean
 
 const MANGA_KIND_NAMES = {
-  manga: "Манга",
-  manhwa: "Манхва",
-  manhua: "Манхуа",
-  light_novel: "Лайт новелла",
-  novel: "Новелла",
-  one_shot: "Ваншот",
-  doujin: "Додзин",
+  manga: 'Манга',
+  manhwa: 'Манхва',
+  manhua: 'Манхуа',
+  light_novel: 'Лайт новелла',
+  novel: 'Новелла',
+  one_shot: 'Ваншот',
+  doujin: 'Додзин',
 }
 
 const MANGA_STATUS_NAMES = {
-  anons: "Анонс",
-  ongoing: "Онгоинг",
-  released: "Выпущен",
-  paused: "Приостановлен",
-  discontinued: "Заброшен",
+  anons: 'Анонс',
+  ongoing: 'Онгоинг',
+  released: 'Выпущен',
+  paused: 'Приостановлен',
+  discontinued: 'Заброшен',
 }
 
-export function makeMangaInfoText(manga: any): string {
+export function makeMangaInfoText(manga: Manga): string {
   return write(manga, [
     addTitle,
     addKind,
@@ -46,23 +48,23 @@ const addTitle: Writer = (buf, manga) => {
 
 const addKind: Writer = (buf, manga) => {
   if (!manga.kind) return false
-  buf.push(`<b>Тип:</b> ${MANGA_KIND_NAMES[manga.kind as "manga"]}`)
+  buf.push(`<b>Тип:</b> ${MANGA_KIND_NAMES[manga.kind as 'manga']}`)
   return true
 }
 
 const addDate: Writer = (buf, manga) => {
   const makeDate = (on: any) =>
-    [on.day?.toString().padStart(2, "0"), on.month?.toString().padStart(2, "0"), on.year]
+    [on.day?.toString().padStart(2, '0'), on.month?.toString().padStart(2, '0'), on.year]
       .filter(x => x)
-      .join(".")
+      .join('.')
 
   if (!manga.airedOn?.year) return false
-  buf.push("<b>Дата:</b> ", makeDate(manga.airedOn))
+  buf.push('<b>Дата:</b> ', makeDate(manga.airedOn))
 
   if (manga.releasedOn?.year) {
-    buf.push(" | ", makeDate(manga.releasedOn))
-  } else if (manga.status === "ongoing") {
-    buf.push(" | Выходит до сих пор")
+    buf.push(' | ', makeDate(manga.releasedOn))
+  } else if (manga.status === 'ongoing') {
+    buf.push(' | Выходит до сих пор')
   }
 
   return true
@@ -76,13 +78,13 @@ const addScore: Writer = (buf, anime) => {
 
 const addStatus: Writer = (buf, manga) => {
   if (!manga.status) return false
-  buf.push(`<b>Статус:</b> ${MANGA_STATUS_NAMES[manga.status as "released"]}`)
+  buf.push(`<b>Статус:</b> ${MANGA_STATUS_NAMES[manga.status as 'released']}`)
   return true
 }
 
 const addDuration: Writer = (buf, manga) => {
   if (!manga.chapters && !manga.volumes) return false
-  buf.push("<b>Продолжительность:</b> ")
+  buf.push('<b>Продолжительность:</b> ')
   if (manga.chapters) {
     buf.push(`${manga.chapters} гл.`)
     if (manga.volumes) buf.push(` [${manga.volumes} т.]`)
@@ -95,16 +97,16 @@ const addDuration: Writer = (buf, manga) => {
 const addGenres: Writer = (buf, manga) => {
   const genres = manga.genres?.map((x: any) => x.russian)
   if (!genres || genres.length === 0) return false
-  const title = genres.length === 1 ? "Жанр" : "Жанры"
-  buf.push(`<b>${title}:</b> ${genres.join(", ")}`)
+  const title = genres.length === 1 ? 'Жанр' : 'Жанры'
+  buf.push(`<b>${title}:</b> ${genres.join(', ')}`)
   return true
 }
 
 const addPublishers: Writer = (buf, manga) => {
   const publishers = manga.publishers?.map((x: any) => x.name)
   if (!publishers || publishers.length === 0) return false
-  const title = publishers.length === 1 ? "Издатель" : "Издатели"
-  buf.push(`<b>${title}:</b> ${publishers.join(", ")}`)
+  const title = publishers.length === 1 ? 'Издатель' : 'Издатели'
+  buf.push(`<b>${title}:</b> ${publishers.join(', ')}`)
   return true
 }
 
@@ -123,7 +125,7 @@ function write(manga: any, writers: Writer[]): string {
   const buf: any[] = []
   for (const writer of writers) {
     const writed = writer(buf, manga)
-    if (writed) buf.push("\n")
+    if (writed) buf.push('\n')
   }
-  return buf.join("").trimEnd()
+  return buf.join('').trimEnd()
 }

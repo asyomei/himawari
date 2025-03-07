@@ -1,18 +1,18 @@
-import { InlineKeyboard, type InlineQueryContext, InlineQueryResultBuilder } from "grammy"
-import type { MyContext } from "#/types/context"
-import { INLINE_ITEMS_COUNT } from "../consts"
-import { api } from "./api"
+import { InlineKeyboard, type InlineQueryContext, InlineQueryResultBuilder } from 'grammy'
+import { INLINE_ITEMS_COUNT } from '#/consts'
+import type { MyContext } from '#/types/context'
+import { api } from './api'
 
 const VIDEO_KIND_NAMES = {
-  pv: "Проморолик",
-  cm: "Реклама",
-  op: "Опенинг",
-  ed: "Эндинг",
-  clip: "Клип",
-  op_ed_clip: "OP&ED клип",
-  character_trailer: "Трейлер персонажа",
-  episode_preview: "Превью к эпизоду",
-  other: "Другое",
+  pv: 'Проморолик',
+  cm: 'Реклама',
+  op: 'Опенинг',
+  ed: 'Эндинг',
+  clip: 'Клип',
+  op_ed_clip: 'OP&ED клип',
+  character_trailer: 'Трейлер персонажа',
+  episode_preview: 'Превью к эпизоду',
+  other: 'Другое',
 }
 
 export async function animeScreenshotsInline(ctx: InlineQueryContext<MyContext>): Promise<void> {
@@ -37,7 +37,7 @@ export async function animeScreenshotsInline(ctx: InlineQueryContext<MyContext>)
 
   await ctx.answerInlineQuery(results, {
     cache_time: 0,
-    next_offset: results.length === INLINE_ITEMS_COUNT ? `${page + 1}` : "",
+    next_offset: results.length === INLINE_ITEMS_COUNT ? `${page + 1}` : '',
   })
 }
 
@@ -50,7 +50,7 @@ export async function animeVideosInline(ctx: InlineQueryContext<MyContext>): Pro
     INLINE_ITEMS_COUNT * page,
   )
   const results = videos.map(video => {
-    let title = VIDEO_KIND_NAMES[video.kind as "op"]
+    let title = VIDEO_KIND_NAMES[video.kind as 'op']
     if (video.name) title = `[${title}] ${video.name}`
 
     const videoHtml = InlineQueryResultBuilder.videoHtml(
@@ -64,7 +64,7 @@ export async function animeVideosInline(ctx: InlineQueryContext<MyContext>): Pro
 
   await ctx.answerInlineQuery(results, {
     cache_time: 0,
-    next_offset: results.length === INLINE_ITEMS_COUNT ? `${page + 1}` : "",
+    next_offset: results.length === INLINE_ITEMS_COUNT ? `${page + 1}` : '',
   })
 }
 
@@ -82,13 +82,13 @@ export async function animeCharactersInline(ctx: InlineQueryContext<MyContext>):
       thumbnail_url: character.poster?.originalUrl,
       description: character.name,
       url: character.url,
-      reply_markup: new InlineKeyboard().text("Загрузка...", "nothing"),
+      reply_markup: new InlineKeyboard().text('Загрузка...', 'nothing'),
     })
     return article.text(title)
   })
 
   await ctx.answerInlineQuery(articles, {
     cache_time: 0,
-    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : "",
+    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : '',
   })
 }

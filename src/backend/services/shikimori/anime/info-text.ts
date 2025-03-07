@@ -1,26 +1,28 @@
-import { parseDescription } from "../utils"
+import { parseDescription } from '../parse-description'
+import type { api } from './api'
 
-type Writer = (buf: any[], anime: any) => boolean
+type Anime = Awaited<ReturnType<typeof api.info>>
+type Writer = (buf: any[], anime: Anime) => boolean
 
 export const ANIME_KIND_NAMES = {
-  tv: "TV сериал",
-  movie: "Фильм",
-  ova: "OVA",
-  ona: "ONA",
-  special: "Спэшл",
-  tv_special: "TV спэшл",
-  music: "Клип",
-  pv: "Проморолик",
-  cm: "Реклама",
+  tv: 'TV сериал',
+  movie: 'Фильм',
+  ova: 'OVA',
+  ona: 'ONA',
+  special: 'Спэшл',
+  tv_special: 'TV спэшл',
+  music: 'Клип',
+  pv: 'Проморолик',
+  cm: 'Реклама',
 }
 
 export const ANIME_STATUS_NAMES = {
-  anons: "Анонс",
-  ongoing: "Онгоинг",
-  released: "Выпущено",
+  anons: 'Анонс',
+  ongoing: 'Онгоинг',
+  released: 'Выпущено',
 }
 
-export function makeAnimeInfoText(anime: any): string {
+export function makeAnimeInfoText(anime: Anime): string {
   return write(anime, [
     addTitle,
     addKind,
@@ -50,23 +52,23 @@ const addTitle: Writer = (buf, anime) => {
 
 const addKind: Writer = (buf, anime) => {
   if (!anime.kind) return false
-  buf.push(`<b>Тип:</b> ${ANIME_KIND_NAMES[anime.kind as "tv"]}`)
+  buf.push(`<b>Тип:</b> ${ANIME_KIND_NAMES[anime.kind as 'tv']}`)
   return true
 }
 
 const addDate: Writer = (buf, anime) => {
   const makeDate = (on: any) =>
-    [on.day?.toString().padStart(2, "0"), on.month?.toString().padStart(2, "0"), on.year]
+    [on.day?.toString().padStart(2, '0'), on.month?.toString().padStart(2, '0'), on.year]
       .filter(x => x)
-      .join(".")
+      .join('.')
 
   if (!anime.airedOn?.year) return false
-  buf.push("<b>Дата:</b> ", makeDate(anime.airedOn))
+  buf.push('<b>Дата:</b> ', makeDate(anime.airedOn))
 
   if (anime.releasedOn?.year) {
-    buf.push(" | ", makeDate(anime.releasedOn))
-  } else if (anime.status === "ongoing") {
-    buf.push(" | Выходит до сих пор")
+    buf.push(' | ', makeDate(anime.releasedOn))
+  } else if (anime.status === 'ongoing') {
+    buf.push(' | Выходит до сих пор')
   }
 
   return true
@@ -80,12 +82,12 @@ const addScore: Writer = (buf, anime) => {
 
 const addStatus: Writer = (buf, anime) => {
   if (!anime.status) return false
-  buf.push(`<b>Статус:</b> ${ANIME_STATUS_NAMES[anime.status as "released"]}`)
+  buf.push(`<b>Статус:</b> ${ANIME_STATUS_NAMES[anime.status as 'released']}`)
   return true
 }
 
 const addDuration: Writer = (buf, anime) => {
-  if (anime.status === "ongoing") {
+  if (anime.status === 'ongoing') {
     if (!anime.episodesAired) return false
     buf.push(`<b>Продолжительность:</b> ${anime.episodesAired}`)
     if (anime.episodes) buf.push(`/${anime.episodes}`)
@@ -93,7 +95,7 @@ const addDuration: Writer = (buf, anime) => {
     if (!anime.episodes) return false
     buf.push(`<b>Продолжительность:</b> ${anime.episodes}`)
   }
-  buf.push(" эп.")
+  buf.push(' эп.')
 
   if (anime.duration) buf.push(` по ${anime.duration} мин.`)
 
@@ -101,10 +103,10 @@ const addDuration: Writer = (buf, anime) => {
 }
 
 const addNextEpisodeAt: Writer = (buf, anime) => {
-  if (anime.status !== "ongoing" || !anime.nextEpisodeAt) return false
+  if (anime.status !== 'ongoing' || !anime.nextEpisodeAt) return false
 
   const [year, month, day, hours, minutes] = anime.nextEpisodeAt
-    .match(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+)/)
+    .match(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+)/)!
     .slice(1)
   const nextEpisodeAtFormatted = `${day}.${month}.${year} ${hours}:${minutes} по МСК`
   buf.push(`<b>Следующий эпизод:</b> ${nextEpisodeAtFormatted}`)
@@ -113,7 +115,7 @@ const addNextEpisodeAt: Writer = (buf, anime) => {
 
 const addRating: Writer = (buf, anime) => {
   if (!anime.rating) return false
-  const rating = anime.rating.replace("_plus", "+").replace("_", "-").toUpperCase()
+  const rating = anime.rating.replace('_plus', '+').replace('_', '-').toUpperCase()
   buf.push(`<b>Рейтинг:</b> ${rating}`)
   return true
 }
@@ -121,30 +123,30 @@ const addRating: Writer = (buf, anime) => {
 const addGenres: Writer = (buf, anime) => {
   const genres = anime.genres?.map((x: any) => x.russian)
   if (!genres || genres.length === 0) return false
-  const title = genres.length === 1 ? "Жанр" : "Жанры"
-  buf.push(`<b>${title}:</b> ${genres.join(", ")}`)
+  const title = genres.length === 1 ? 'Жанр' : 'Жанры'
+  buf.push(`<b>${title}:</b> ${genres.join(', ')}`)
   return true
 }
 
 const addStudios: Writer = (buf, anime) => {
   const studios = anime.studios?.map((x: any) => x.name)
   if (!studios || studios.length === 0) return false
-  const title = studios.length === 1 ? "Студия" : "Студии"
-  buf.push(`<b>${title}:</b> ${studios.join(", ")}`)
+  const title = studios.length === 1 ? 'Студия' : 'Студии'
+  buf.push(`<b>${title}:</b> ${studios.join(', ')}`)
   return true
 }
 
 const addDubs: Writer = (buf, anime) => {
   const dubs = anime.fandubbers
   if (!dubs || dubs.length === 0) return false
-  buf.push(`<b>Озвучка:</b> ${dubs.join(", ")}`)
+  buf.push(`<b>Озвучка:</b> ${dubs.join(', ')}`)
   return true
 }
 
 const addSubs: Writer = (buf, anime) => {
   const subs = anime.fansubbers
   if (!subs || subs.length === 0) return false
-  buf.push(`<b>Субтитры:</b> ${subs.join(", ")}`)
+  buf.push(`<b>Субтитры:</b> ${subs.join(', ')}`)
   return true
 }
 
@@ -163,8 +165,8 @@ function write(anime: any, writers: Writer[]): string {
   const buf: any[] = []
   for (const writer of writers) {
     const writed = writer(buf, anime)
-    if (writed) buf.push("\n")
+    if (writed) buf.push('\n')
   }
 
-  return buf.join("").trimEnd()
+  return buf.join('').trimEnd()
 }

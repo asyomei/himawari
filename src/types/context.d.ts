@@ -1,4 +1,3 @@
-import type { HydrateFlavor } from "@grammyjs/hydrate"
-import type { Context } from "grammy"
+import type { Context } from 'grammy'
 
-export type MyContext = HydrateFlavor<Context>
+export type MyContext = Context

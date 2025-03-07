@@ -5,18 +5,24 @@ import {
   InlineKeyboard,
   type InlineQueryContext,
   InlineQueryResultBuilder,
-} from "grammy"
-import type { MyContext } from "#/types/context"
-import { INLINE_ITEMS_COUNT, PAGE_ITEMS_COUNT } from "../consts"
-import { escapeHTML } from "../utils"
-import { api } from "./api"
+} from 'grammy'
+import { INLINE_ITEMS_COUNT, PAGE_ITEMS_COUNT } from '#/consts'
+import type { MyContext } from '#/types/context'
+import { escapeHTML } from '#/utils/escape-html'
+import { api } from './api'
 
-export async function mangas(ctx: HearsContext<Filter<MyContext, "message:text">>): Promise<void> {
-  const search = ctx.match[1]!
+export async function mangas(ctx: HearsContext<Filter<MyContext, 'message:text'>>): Promise<void> {
+  const search = ctx.match[1]
+  if (!search) {
+    await ctx.reply('Введите запрос', {
+      reply_parameters: { message_id: ctx.msgId },
+    })
+    return
+  }
 
   const mangas = await api.search(search, PAGE_ITEMS_COUNT, 1)
   if (!mangas || mangas.length === 0) {
-    await ctx.reply("Ничего не найдено", {
+    await ctx.reply('Ничего не найдено', {
       reply_parameters: { message_id: ctx.msgId },
     })
     return
@@ -24,7 +30,7 @@ export async function mangas(ctx: HearsContext<Filter<MyContext, "message:text">
 
   await ctx.reply(`<b>[Поиск манги]</b> ${escapeHTML(search)}`, {
     reply_parameters: { message_id: ctx.msgId },
-    parse_mode: "HTML",
+    parse_mode: 'HTML',
     reply_markup: makeMangaListInlineKeyboard(mangas, 1, ctx.from.id),
   })
 }
@@ -34,24 +40,24 @@ export async function mangasCallback(ctx: CallbackQueryContext<MyContext>): Prom
   const page = Number(ctx.match[2]!)
 
   if (fromId !== ctx.from.id) {
-    await ctx.answerCallbackQuery("Эта кнопка не для вас")
+    await ctx.answerCallbackQuery('Эта кнопка не для вас')
     return
   }
 
   if (page === 0) {
-    await ctx.answerCallbackQuery("Достигнуто начало поиска")
+    await ctx.answerCallbackQuery('Достигнуто начало поиска')
     return
   }
 
-  const search = ctx.callbackQuery.message?.text?.replace("[Поиск манги] ", "")
+  const search = ctx.callbackQuery.message?.text?.replace('[Поиск манги] ', '')
   if (!search) {
-    await Promise.all([ctx.answerCallbackQuery("Данный поиск устарел"), ctx.deleteMessage()])
+    await Promise.all([ctx.answerCallbackQuery('Данный поиск устарел'), ctx.deleteMessage()])
     return
   }
 
   const mangas = await api.search(search, PAGE_ITEMS_COUNT, page)
   if (!mangas || mangas.length === 0) {
-    await ctx.answerCallbackQuery("Достигнут конец поиска")
+    await ctx.answerCallbackQuery('Достигнут конец поиска')
     return
   }
 
@@ -73,16 +79,15 @@ export async function mangasInline(ctx: InlineQueryContext<MyContext>): Promise<
     const article = InlineQueryResultBuilder.article(`manga info ${manga.id}`, title, {
       description: manga.name,
       url: manga.url,
-      hide_url: true,
       thumbnail_url: !manga.isCensored ? manga.poster?.originalUrl : undefined,
-      reply_markup: new InlineKeyboard().text("Загрузка...", "nothing"),
+      reply_markup: new InlineKeyboard().text('Загрузка...', 'nothing'),
     })
     return article.text(title)
   })
 
   await ctx.answerInlineQuery(articles, {
     cache_time: 0,
-    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : "",
+    next_offset: articles.length === INLINE_ITEMS_COUNT ? `${page + 1}` : '',
   })
 }
 
@@ -95,13 +100,13 @@ function makeMangaListInlineKeyboard(mangas: any[], page: number, userId: number
     kb.text(title, `${userId} manga info ${manga.id}`).row()
   }
 
-  kb.text("<< Назад", `${userId} manga search ${page - 1}`)
+  kb.text('<< Назад', `${userId} manga search ${page - 1}`)
   if (page === 1) {
-    kb.text(`${page}`, "nothing")
+    kb.text(`${page}`, 'nothing')
   } else {
     kb.text(`<<< ${page}`, `${userId} manga search 1`)
   }
-  kb.text("Вперёд >>", `${userId} manga search ${page + 1}`)
+  kb.text('Вперёд >>', `${userId} manga search ${page + 1}`)
 
   return kb
 }

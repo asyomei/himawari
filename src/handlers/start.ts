@@ -1,14 +1,5 @@
-import { type CommandContext, Composer } from "grammy"
-import type { MyContext } from "#/types/context"
+import { bot } from '#/bot'
 
-const comp = new Composer<MyContext>()
-export { comp as startHandler }
-
-comp.on("message:text").command("start", start)
-
-const START_TEXT = `Приветик, %s!
-/help_anime - Поиск аниме, манги и их персонажей`
-
-async function start(ctx: CommandContext<MyContext>): Promise<void> {
-  await ctx.reply(START_TEXT.replace("%s", ctx.from?.first_name ?? "пользователь"))
-}
+bot.on('message:text').command('start', async ctx => {
+  await ctx.reply(`Привет, ${ctx.from.first_name}`)
+})

@@ -1,18 +1,20 @@
-import { parseDescription } from "../utils"
+import { parseDescription } from '../parse-description'
+import type { api } from './api'
 
-type Writer = (buf: any[], character: any) => boolean
+type Character = Awaited<ReturnType<typeof api.info>>
+type Writer = (buf: any[], character: Character) => boolean
 
-export function makeCharacterInfoText(character: any): string {
+export function makeCharacterInfoText(character: Character): string {
   return write(character, [addTitle, addSynonyms, addDescription])
 }
 
-function write(character: any, writers: Writer[]): string {
+function write(character: Character, writers: Writer[]): string {
   const buf: any[] = []
   for (const writer of writers) {
     const writed = writer(buf, character)
-    if (writed) buf.push("\n")
+    if (writed) buf.push('\n')
   }
-  return buf.join("").trimEnd()
+  return buf.join('').trimEnd()
 }
 
 const addTitle: Writer = (buf, character) => {
@@ -24,7 +26,7 @@ const addTitle: Writer = (buf, character) => {
 
 const addSynonyms: Writer = (buf, character) => {
   if (!character.synonyms || character.synonyms.length === 0) return false
-  buf.push("<b>Другие имена:</b> ", character.synonyms.join(", "))
+  buf.push('<b>Другие имена:</b> ', character.synonyms.filter(x => x !== character.name).join(', '))
   return true
 }
 

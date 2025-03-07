@@ -1,19 +1,15 @@
-import { autoRetry } from "@grammyjs/auto-retry"
-import { autoThread } from "@grammyjs/auto-thread"
-import { hydrate } from "@grammyjs/hydrate"
-import { limit } from "@grammyjs/ratelimiter"
-import { apiThrottler } from "@grammyjs/transformer-throttler"
-import type { Bot } from "grammy"
-import type { MyContext } from "#/types/context"
-import { dropMsgViaMe } from "./drop-msg-via-me"
+import { autoRetry } from '@grammyjs/auto-retry'
+import { autoThread } from '@grammyjs/auto-thread'
+import { limit } from '@grammyjs/ratelimiter'
+import { apiThrottler } from '@grammyjs/transformer-throttler'
+import type { NextFunction } from 'grammy'
+import { bot } from '#/bot'
+import type { MyContext } from '#/types/context'
 
-export function setupMiddlewares(bot: Bot<MyContext>): void {
-  bot.use(dropMsgViaMe, userLimit, chatLimit, autoThread(), hydrate())
-  bot.api.config.use(autoRetry(), apiThrottler())
-}
-
-const userLimit = limit<MyContext, never>({
+const userLimit = limit({
   keyGenerator: ctx => ctx.from?.id.toString(),
+  limit: 1,
+  timeFrame: 1000,
 })
 
 const chatLimit = limit<MyContext, never>({
@@ -21,3 +17,9 @@ const chatLimit = limit<MyContext, never>({
   timeFrame: 5000,
   limit: 3,
 })
+
+const notViaMe = (ctx: MyContext, next: NextFunction) =>
+  ctx.msg?.via_bot?.id !== ctx.me.id && next()
+
+bot.use(notViaMe, userLimit, chatLimit, autoThread())
+bot.api.config.use(autoRetry(), apiThrottler())

@@ -1,32 +1,42 @@
 {
-  "name": "@asyomei/himawari-bot",
-  "type": "commonjs",
-  "version": "2.0.0",
-  "license": "MIT",
-  "main": "dist/main.js",
-  "private": true,
+  "name": "@asyomei/himawari",
+  "type": "module",
+  "version": "1.0.0",
   "scripts": {
-    "start": "node build.mjs && node --enable-source-maps .",
+    "dev": "tsx watch src/main.ts",
     "build": "node build.mjs",
-    "test": "tsc --noEmit"
+    "tsx": "tsx"
   },
-  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1+sha512.40ee09af407fa9fbb5fbfb8e1cb40fbb74c0af0c3e10e9224d7b53c7658528615b2c92450e74cfad91e3a2dcafe3ce4050d80bda71d757756d2ce2b66213e9a3",
   "dependencies": {
     "@grammyjs/auto-retry": "^2.0.2",
     "@grammyjs/auto-thread": "github:grammyjs/auto-thread",
-    "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/ratelimiter": "^1.2.1",
     "@grammyjs/runner": "^2.0.3",
     "@grammyjs/transformer-throttler": "^1.2.1",
-    "dotenv": "^16.4.6",
+    "cheerio": "^1.0.0",
+    "dedent": "^1.5.3",
+    "dotenv": "^16.4.7",
     "envalid": "^8.0.0",
-    "grammy": "^1.32.0",
-    "node-html-parser": "^6.1.13"
+    "es-toolkit": "^1.32.0",
+    "grammy": "^1.35.0",
+    "node-html-parser": "^7.0.1",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.10.1",
-    "esbuild": "^0.24.0",
-    "typescript": "^5.7.2"
+    "@types/node": "^22.13.9",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild"
+    ]
   }
 }

@@ -66,16 +66,16 @@ async function info(id: string) {
       descriptionSource: z.string().nullish(),
       airedOn: z
         .object({
-          day: z.number(),
-          month: z.number(),
-          year: z.number(),
+          day: z.number().nullish(),
+          month: z.number().nullish(),
+          year: z.number().nullish(),
         })
         .nullish(),
       releasedOn: z
         .object({
-          day: z.number(),
-          month: z.number(),
-          year: z.number(),
+          day: z.number().nullish(),
+          month: z.number().nullish(),
+          year: z.number().nullish(),
         })
         .nullish(),
       genres: z.object({ russian: z.string() }).array().nullish(),
